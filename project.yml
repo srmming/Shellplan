@@ -1,0 +1,57 @@
+name: RoomScan
+options:
+  bundleIdPrefix: com.mingzeng
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: U33A8DX2JT
+    TARGETED_DEVICE_FAMILY: "1"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  RoomScan:
+    type: application
+    platform: iOS
+    sources:
+      - path: RoomScan
+        excludes:
+          - "Resources/**"
+      - path: RoomScan/Resources
+        buildPhase: resources
+    info:
+      path: RoomScan/Info.plist
+      properties:
+        CFBundleDisplayName: 全屋白模
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSCameraUsageDescription: 用于 LiDAR 扫描房间，以及给标注位置拍照
+        NSPhotoLibraryUsageDescription: 用于从相册选择照片附加到备注
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UILaunchScreen: {}
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+        UIRequiredDeviceCapabilities: [arkit]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mingzeng.roomscan
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    scheme:
+      testTargets:
+        - RoomScanTests
+  RoomScanTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: RoomScanTests
+    dependencies:
+      - target: RoomScan
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mingzeng.roomscan.tests
+        GENERATE_INFOPLIST_FILE: YES

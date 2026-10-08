@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全屋白模 · RoomScan</title>
+<meta name="description" content="用 iPhone LiDAR 扫描全屋，生成空房间白模和尺寸平面图，一键导出给 AI 在 Blender 里做室内设计。">
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <img src="assets/icon.png" alt="全屋白模图标">
+    <h1>全屋白模</h1>
+    <p class="muted">用 iPhone LiDAR 扫描全屋，生成白模和尺寸图，交给 AI 做室内设计</p>
+    <nav>
+      <a href="support.html">使用帮助</a>
+      <a href="privacy.html">隐私政策</a>
+      <a href="https://github.com/srmming/RoomScan">源代码</a>
+    </nav>
+  </header>
+
+  <div class="shots">
+    <img src="assets/screenshots/1.png" alt="截图：户型列表">
+    <img src="assets/screenshots/2.png" alt="截图：3D 白模与尺寸">
+    <img src="assets/screenshots/3.png" alt="截图：尺寸平面图">
+    <img src="assets/screenshots/4.png" alt="截图：备注与照片">
+    <img src="assets/screenshots/5.png" alt="截图：导出给 AI">
+  </div>
+
+  <h2>能做什么</h2>
+  <ul>
+    <li><b>一间一间地扫</b>：基于 Apple RoomPlan，扫完一个房间起个名字，接着扫下一个，最后自动拼成全屋。</li>
+    <li><b>自动拍照</b>：扫描时手机拿稳就自动拍，每张照片都记下拍摄位置、朝向和拍到的墙。</li>
+    <li><b>空房间白模</b>：只保留墙、地面和真实挖空的门窗洞口，家具全部去掉。</li>
+    <li><b>尺寸自动标好</b>：墙长、层高、门窗尺寸和离地高度；梁下较矮的墙单独标出墙高。</li>
+    <li><b>标注</b>：测距、备注、附照片；用卷尺量过的墙可以填实测值。</li>
+    <li><b>导出给 AI</b>：OBJ / USD 白模、PNG / PDF 尺寸平面图、结构化数据 scene.json、照片，以及一个 Blender 重建脚本。</li>
+  </ul>
+
+  <h2>设备要求</h2>
+  <p>带 LiDAR 的 iPhone（iPhone 12 Pro 及之后的 Pro / Pro Max），iOS 18 或更高版本。</p>
+
+  <h2>隐私</h2>
+  <p>所有扫描数据和照片只保存在你的手机上。App 不联网、不收集任何数据，只有你主动点「打包分享」时才会把文件交给你选择的目标。详见<a href="privacy.html">隐私政策</a>。</p>
+
+  <h2>开源</h2>
+  <p>全屋白模是开源软件，使用 MIT 许可证。源代码在 <a href="https://github.com/srmming/RoomScan">GitHub</a>，欢迎提问题和贡献代码。</p>
+
+  <hr>
+
+  <h2 lang="en">RoomScan</h2>
+  <div lang="en">
+    <p>Scan your home room by room with iPhone LiDAR (Apple RoomPlan). RoomScan builds an empty <b>whitebox 3D model</b> with real door and window openings, a <b>dimensioned floor plan</b>, and captures reference photos with their camera poses while you scan.</p>
+    <p>Export a single zip with OBJ/USDA models, PNG/PDF floor plans, a structured <code>scene.json</code>, photos, and a Blender script that rebuilds the model at true scale — ready for AI-assisted interior design.</p>
+    <p>Requires an iPhone with LiDAR and iOS 18 or later. All data stays on your device; the app collects nothing. The app UI is currently in Chinese.</p>
+    <p><a href="support.html#en">Support</a> · <a href="privacy.html#en">Privacy Policy</a> · <a href="https://github.com/srmming/RoomScan">Source code (MIT)</a></p>
+  </div>
+
+  <hr>
+  <footer class="muted">© 2026 ming zeng · MIT License</footer>
+</main>
+</body>
+</html>

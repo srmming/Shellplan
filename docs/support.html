@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>使用帮助 · 全屋白模</title>
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <p><a href="index.html">← 全屋白模</a></p>
+  <h1>使用帮助</h1>
+  <p>遇到问题或者有建议，请到 <a href="https://github.com/srmming/RoomScan/issues">GitHub Issues</a> 提出，我们会尽快回复。</p>
+
+  <div class="card">
+    <h3>需要什么设备？</h3>
+    <p>带 LiDAR 的 iPhone（iPhone 12 Pro 及之后的 Pro / Pro Max），iOS 18 或更高版本。没有 LiDAR 的设备可以安装，但只能加载示例户型查看效果。</p>
+  </div>
+
+  <h2>怎么扫描</h2>
+  <ol>
+    <li>首页点「开始扫描」。</li>
+    <li>站在房间里慢慢走一圈，手机对准墙角、门和窗。屏幕上会实时显示已经识别出的墙和门窗。</li>
+    <li>扫完点「完成此房间」，给房间起个名字（客厅、主卧……）。</li>
+    <li>走到下一个房间门口，点「扫下一个房间」。<b>中途不要退出 App</b>，这样房间才能自动对齐。</li>
+    <li>所有房间扫完后点「完成，生成全屋」。</li>
+  </ol>
+  <p class="muted">小技巧：光线充足时识别更准；玻璃、镜子和杂物多的地方误差会大一些。</p>
+
+  <h2>照片</h2>
+  <p>扫描时右下角的「自动拍照」默认是开的：手机拿稳的时候会自动拍一张，换了位置或角度才拍下一张，每个房间最多 30 张。想拍清楚某个细节，点左下角的「这里拍照」。扫完后可以在右上角菜单的「现场照片」里查看，并删掉拍坏的。</p>
+
+  <h2>尺寸和标注</h2>
+  <ul>
+    <li>点一面墙，可以看到它的长度和高度，还能填上用卷尺量到的「实测值」。</li>
+    <li>底部工具栏「测距」：在模型上点两个点，量出距离。</li>
+    <li>底部工具栏「备注」：在模型上点一个位置，写上文字、附上照片。</li>
+    <li>「图层」里可以打开天花板、固定设施（马桶、灶台等）和照片拍摄位置。</li>
+  </ul>
+
+  <h2>导出给 AI</h2>
+  <p>右上角菜单选「导出给 AI」→「打包分享」，会生成一个 zip，用隔空投送发到电脑上即可。包里的 <code>AI_README.md</code> 是写给 AI 看的说明，把整个文件夹交给 AI 就行。</p>
+  <p>在 Blender 里重建白模：</p>
+  <pre><code>blender --background --python build_whitebox.py -- scene.json whitebox.blend</code></pre>
+  <p>也可以直接导入 <code>whitebox.obj</code> 或 <code>whitebox.usda</code>。</p>
+
+  <h2>常见问题</h2>
+  <div class="card">
+    <h3>为什么梁和吊顶没有扫出来？</h3>
+    <p>Apple RoomPlan 不识别天花板。梁下面的墙会被扫得比较矮，App 会把这种墙的高度单独标出来，可以据此判断梁的位置和梁底高度。</p>
+  </div>
+  <div class="card">
+    <h3>尺寸准吗？</h3>
+    <p>墙长误差一般在几厘米以内，足够做设计和估算。要定制柜子等需要精确尺寸的地方，建议用卷尺复核，并把结果填成「实测值」。</p>
+  </div>
+  <div class="card">
+    <h3>数据保存在哪里？</h3>
+    <p>只保存在你的手机上，可以在「文件」App →「我的 iPhone」→「全屋白模」里看到。App 不联网，详见<a href="privacy.html">隐私政策</a>。</p>
+  </div>
+
+  <hr>
+
+  <div lang="en" id="en">
+    <h1>Support</h1>
+    <p>Questions or suggestions? Please open an issue on <a href="https://github.com/srmming/RoomScan/issues">GitHub</a>.</p>
+    <h3>Requirements</h3>
+    <p>An iPhone with LiDAR (iPhone 12 Pro or later Pro / Pro Max models) running iOS 18 or later. Devices without LiDAR can only view the sample floor plan.</p>
+    <h3>Scanning</h3>
+    <p>Tap “开始扫描” (Start scan), walk slowly around the room pointing at corners, doors, and windows, then tap “完成此房间” (Finish room) and name it. Tap “扫下一个房间” (Next room) at the next doorway — keep the app open so rooms align — and finally “完成，生成全屋” (Finish).</p>
+    <h3>Export</h3>
+    <p>Menu → “导出给 AI” (Export for AI) → “打包分享” (Package and share) creates a zip with OBJ/USDA models, floor plans, <code>scene.json</code>, photos, and a Blender script. Rebuild in Blender with <code>blender --background --python build_whitebox.py -- scene.json whitebox.blend</code>.</p>
+    <h3>Privacy</h3>
+    <p>All data stays on your device. See the <a href="privacy.html#en">Privacy Policy</a>.</p>
+  </div>
+
+  <hr>
+  <footer class="muted">© 2026 ming zeng · MIT License</footer>
+</main>
+</body>
+</html>

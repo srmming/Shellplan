@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <g fill="none" stroke="#93C5FD" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M150,270 V150 H270"/>
+    <path d="M754,150 H874 V270"/>
+    <path d="M874,754 V874 H754"/>
+    <path d="M270,874 H150 V754"/>
+  </g>
+
+  <g transform="translate(0,60)">
+  <polygon points="252,530 512,380 772,530 512,680" fill="#64748B"/>
+  <polygon points="252,530 512,380 512,155 252,305" fill="#F1F5F9"/>
+  <polygon points="512,380 772,530 772,305 512,155" fill="#CBD5E1"/>
+  <polygon points="330,405 421,352.5 421,262.5 330,315" fill="#0F172A"/>
+  <polygon points="655,462.5 720,500 720,350 655,312.5" fill="#0F172A"/>
+  <polyline points="252,305 512,155 772,305" fill="none" stroke="#F8FAFC" stroke-width="10" stroke-linejoin="round"/>
+  <line x1="512" y1="380" x2="512" y2="155" stroke="#020617" stroke-opacity="0.15" stroke-width="4"/>
+
+  <g stroke="#FBBF24" stroke-width="14" stroke-linecap="round">
+    <line x1="228" y1="572" x2="488" y2="722"/>
+    <line x1="216" y1="593" x2="240" y2="551"/>
+    <line x1="476" y1="743" x2="500" y2="701"/>
+  </g>
+  </g>
+</svg>
