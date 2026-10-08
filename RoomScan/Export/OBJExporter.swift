@@ -5,7 +5,7 @@ import Foundation
 /// 导入后的坐标和 scene.json 完全一致。
 enum OBJExporter {
     static func export(_ plan: FloorPlanData, whitebox wb: Whitebox) -> (obj: String, mtl: String) {
-        var out = "# RoomScan 白模 — \(plan.meta.projectName)\n# 单位：米。坐标与 scene.json 对应关系见 AI_README.md\n"
+        var out = "# RoomScan whitebox — \(plan.meta.projectName)\n# Units: meters. Written Y-up; Blender's default OBJ import restores the Z-up coordinates of scene.json\n"
         out += "mtllib whitebox.mtl\n"
         var vertexCount = 0
 

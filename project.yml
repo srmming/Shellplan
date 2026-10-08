@@ -1,12 +1,15 @@
 name: RoomScan
 options:
   bundleIdPrefix: com.mingzeng
+  developmentLanguage: zh-Hans
   deploymentTarget:
     iOS: "18.0"
   createIntermediateGroups: true
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: U33A8DX2JT
     TARGETED_DEVICE_FAMILY: "1"
@@ -26,6 +29,7 @@ targets:
       path: RoomScan/Info.plist
       properties:
         CFBundleDisplayName: 全屋白模
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSCameraUsageDescription: 用于 LiDAR 扫描房间，以及给标注位置拍照

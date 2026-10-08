@@ -65,20 +65,20 @@ struct ScanScreen: View {
         switch controller.phase {
         case .scanning:
             return controller.autoPhotoEnabled
-                ? "慢慢移动手机，对准墙角、门和窗。停一下就会自动拍照"
-                : "慢慢移动手机，对准墙角、门和窗"
-        case .betweenRooms: return "走到下一个房间门口再点「扫下一个房间」。中途不要退出 App，房间才能自动对齐"
+                ? String(localized: "慢慢移动手机，对准墙角、门和窗。停一下就会自动拍照")
+                : String(localized: "慢慢移动手机，对准墙角、门和窗")
+        case .betweenRooms: return String(localized: "走到下一个房间门口再点「扫下一个房间」。中途不要退出 App，房间才能自动对齐")
         default: return nil
         }
     }
 
     private var statusText: String {
         switch controller.phase {
-        case .scanning: return "房间 \(controller.currentRoomNumber) · 扫描中"
-        case .processing: return "房间 \(controller.currentRoomNumber) · 处理中"
-        case .naming, .betweenRooms: return "已完成 \(controller.roomNames.count) 个房间"
-        case .building: return "生成白模"
-        default: return "准备中"
+        case .scanning: return String(localized: "房间 \(controller.currentRoomNumber) · 扫描中")
+        case .processing: return String(localized: "房间 \(controller.currentRoomNumber) · 处理中")
+        case .naming, .betweenRooms: return String(localized: "已完成 \(controller.roomNames.count) 个房间")
+        case .building: return String(localized: "生成白模")
+        default: return String(localized: "准备中")
         }
     }
 
@@ -119,7 +119,7 @@ struct ScanScreen: View {
         switch controller.phase {
         case .scanning:
             HStack(alignment: .bottom) {
-                roundButton("camera", "这里拍照", badge: controller.photoCount) { controller.capturePhoto() }
+                roundButton("camera", String(localized: "这里拍照"), badge: controller.photoCount) { controller.capturePhoto() }
                 Spacer()
                 Button {
                     controller.finishRoom()
@@ -135,7 +135,7 @@ struct ScanScreen: View {
                 }
                 Spacer()
                 roundButton("camera.aperture",
-                            controller.autoPhotoEnabled ? "自动拍照 开" : "自动拍照 关",
+                            controller.autoPhotoEnabled ? String(localized: "自动拍照 开") : String(localized: "自动拍照 关"),
                             badge: controller.autoPhotoCount) {
                     controller.autoPhotoEnabled.toggle()
                 }
@@ -217,7 +217,7 @@ struct RoomNameSheet: View {
     var onRescan: () -> Void
 
     @State private var name = ""
-    private let presets = ["客厅", "餐厅", "主卧", "次卧", "儿童房", "书房", "厨房", "卫生间", "主卫", "阳台", "玄关", "走廊", "储物间"]
+    private let presets = RoomName.presets
 
     var body: some View {
         NavigationStack {

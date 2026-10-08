@@ -9,8 +9,8 @@ struct OnboardingView: View {
 
     private struct Page {
         var icon: String
-        var title: String
-        var text: String
+        var title: LocalizedStringKey
+        var text: LocalizedStringKey
     }
 
     private let pages = [
@@ -64,7 +64,7 @@ struct OnboardingView: View {
                         onDone()
                     }
                 } label: {
-                    Text(page < pages.count - 1 ? "下一步" : "开始使用")
+                    Text(page < pages.count - 1 ? String(localized: "下一步") : String(localized: "开始使用"))
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)

@@ -13,7 +13,7 @@ final class ScanController: NSObject, ObservableObject, RoomCaptureViewDelegate 
 
     @Published private(set) var phase: Phase = .idle
     @Published private(set) var roomNames: [String] = []
-    @Published private(set) var suggestedName = "客厅"
+    @Published private(set) var suggestedName = RoomName.living
     @Published private(set) var photoCount = 0
     @Published private(set) var autoPhotoCount = 0
     @Published var autoPhotoEnabled = true
@@ -64,7 +64,7 @@ final class ScanController: NSObject, ObservableObject, RoomCaptureViewDelegate 
 
     func confirmName(_ name: String) {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
-        roomNames.append(trimmed.isEmpty ? "房间\(roomNames.count + 1)" : trimmed)
+        roomNames.append(trimmed.isEmpty ? RoomName.generic(roomNames.count + 1) : trimmed)
         phase = .betweenRooms
     }
 
@@ -98,11 +98,11 @@ final class ScanController: NSObject, ObservableObject, RoomCaptureViewDelegate 
                 try? structure.export(to: original, exportOptions: .parametric)
             } catch {
                 if rooms.count == 1, let room = rooms.first {
-                    plan = RoomPlanAdapter.makePlan(room: room, roomName: names.first ?? "房间1",
+                    plan = RoomPlanAdapter.makePlan(room: room, roomName: names.first ?? RoomName.generic(1),
                                                     photos: photos, projectName: projectName)
                     try? room.export(to: original, exportOptions: .parametric)
                 } else {
-                    failure = "拼合全屋失败：\(error.localizedDescription)"
+                    failure = String(localized: "拼合全屋失败：\(error.localizedDescription)")
                 }
             }
             let result = plan, message = failure
@@ -111,7 +111,7 @@ final class ScanController: NSObject, ObservableObject, RoomCaptureViewDelegate 
                     self.output = ScanOutput(plan: result, workDir: workDir)
                     self.phase = .done
                 } else {
-                    self.phase = .failed(message ?? "拼合全屋失败")
+                    self.phase = .failed(message ?? String(localized: "拼合全屋失败"))
                 }
             }
         }
@@ -222,7 +222,7 @@ final class ScanController: NSObject, ObservableObject, RoomCaptureViewDelegate 
     func captureView(didPresent processedResult: CapturedRoom, error: Error?) {
         DispatchQueue.main.async {
             if let error {
-                self.phase = .failed("这个房间处理失败：\(error.localizedDescription)")
+                self.phase = .failed(String(localized: "这个房间处理失败：\(error.localizedDescription)"))
                 return
             }
             self.capturedRooms.append(processedResult)

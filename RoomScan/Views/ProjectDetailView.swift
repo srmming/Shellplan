@@ -4,7 +4,15 @@ struct ProjectDetailView: View {
     @EnvironmentObject private var store: ProjectStore
     @State private var project: Project
 
-    private enum Mode: String, CaseIterable { case model = "3D 白模", plan = "平面图" }
+    private enum Mode: CaseIterable {
+        case model, plan
+        var title: String {
+            switch self {
+            case .model: return String(localized: "3D 白模")
+            case .plan: return String(localized: "平面图")
+            }
+        }
+    }
     private enum Tool { case inspect, measure, note }
 
     @State private var mode: Mode = .model
@@ -17,6 +25,9 @@ struct ProjectDetailView: View {
     @State private var viewingPhoto: FloorPlanData.SitePhoto?
     @State private var selectedRoomId: String?
     @State private var selectedWallId: String?
+    /// 点墙时点到的位置，添加门窗时用来定初始位置
+    @State private var selectedWallPoint: Vec2?
+    @State private var editingOpening: FloorPlanData.Opening?
     @State private var measureStart: Vec3?
     @State private var editingAnnotation: FloorPlanData.Annotation?
     @State private var showExport = false
@@ -31,7 +42,7 @@ struct ProjectDetailView: View {
         _project = State(initialValue: project)
         switch DemoMode.screen {
         case "model": _selectedRoomId = State(initialValue: project.plan.rooms.first?.id)
-        case "plan": _mode = State(initialValue: .plan)
+        case "plan", "door": _mode = State(initialValue: .plan)
         default: break
         }
     }
@@ -47,7 +58,7 @@ struct ProjectDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             Picker("视图", selection: $mode) {
-                ForEach(Mode.allCases, id: \.self) { Text($0.rawValue) }
+                ForEach(Mode.allCases, id: \.self) { Text($0.title) }
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
@@ -60,10 +71,11 @@ struct ProjectDetailView: View {
                 case .model:
                     ModelViewer(plan: plan, options: viewOptions, onTap: handleHit)
                 case .plan:
-                    FloorPlanView(plan: plan, highlightRoomId: selectedRoomId)
+                    FloorPlanView(plan: plan, highlightRoomId: selectedRoomId, selectedOpeningId: editingOpening?.id,
+                                  selectedWallId: selectedWallId, onTap: handlePlanHit)
                 }
                 VStack(spacing: 8) {
-                    if mode == .model, let hint { hintBubble(hint) }
+                    if let hint { hintBubble(hint) }
                     if let wall = selectedWall { wallCard(wall) }
                 }
                 .padding()
@@ -105,6 +117,10 @@ struct ProjectDetailView: View {
                             isNew: !plan.annotations.contains { $0.id == ann.id },
                             onSave: saveAnnotation, onDelete: { deleteAnnotation(ann.id) })
         }
+        .sheet(item: $editingOpening) { o in
+            OpeningEditor(plan: plan, opening: o, isNew: plan.opening(o.id) == nil,
+                          onSave: saveOpening, onDelete: { deleteOpening(o.id) })
+        }
         .sheet(isPresented: $showExport) {
             ExportSheet(project: project)
         }
@@ -140,6 +156,7 @@ struct ProjectDetailView: View {
             try? await Task.sleep(for: .milliseconds(800))
             if screen == "note" { editingAnnotation = plan.annotations.first }
             if screen == "export" { showExport = true }
+            if screen == "door" { editingOpening = plan.opening("D2") ?? plan.openings.first }
         }
         .onChange(of: tool) { _, _ in
             measureStart = nil
@@ -152,7 +169,7 @@ struct ProjectDetailView: View {
     private var roomChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                chip("全部", selected: selectedRoomId == nil) { selectedRoomId = nil }
+                chip(String(localized: "全部"), selected: selectedRoomId == nil) { selectedRoomId = nil }
                 ForEach(plan.rooms) { room in
                     chip("\(room.name) \(Fmt.area(room.area))㎡", selected: selectedRoomId == room.id) {
                         selectedRoomId = selectedRoomId == room.id ? nil : room.id
@@ -204,12 +221,12 @@ struct ProjectDetailView: View {
         .background(.bar)
     }
 
-    private func toolButton(_ title: String, _ icon: String, _ t: Tool) -> some View {
+    private func toolButton(_ title: LocalizedStringKey, _ icon: String, _ t: Tool) -> some View {
         Button { tool = t } label: { toolLabel(title, icon, active: tool == t) }
             .frame(maxWidth: .infinity)
     }
 
-    private func toolLabel(_ title: String, _ icon: String, active: Bool) -> some View {
+    private func toolLabel(_ title: LocalizedStringKey, _ icon: String, active: Bool) -> some View {
         VStack(spacing: 3) {
             Image(systemName: icon).font(.title3)
             Text(title).font(.caption2)
@@ -218,10 +235,13 @@ struct ProjectDetailView: View {
     }
 
     private var hint: String? {
+        if mode == .plan {
+            return selectedWallId == nil ? String(localized: "点门窗修改样式和位置；点墙可以添加门窗") : nil
+        }
         switch tool {
-        case .inspect: return selectedWallId == nil ? "点墙查看尺寸、填实测值；点蓝色图钉看备注。单位 mm" : nil
-        case .measure: return measureStart == nil ? "测距：点第一个点" : "测距：再点第二个点"
-        case .note: return "点模型上的位置添加备注（可以附照片）"
+        case .inspect: return selectedWallId == nil ? String(localized: "点墙查看尺寸、填实测值；点蓝色图钉看备注。单位 mm") : nil
+        case .measure: return measureStart == nil ? String(localized: "测距：点第一个点") : String(localized: "测距：再点第二个点")
+        case .note: return String(localized: "点模型上的位置添加备注（可以附照片）")
         }
     }
 
@@ -254,20 +274,29 @@ struct ProjectDetailView: View {
                 }
                 .accessibilityLabel("关闭")
             }
-            Text("扫描长度 \(Fmt.mm(wall.length)) · 高 \(Fmt.mm(wall.height))\(wall.isCurved ? " · 弧形墙（近似）" : "")")
+            Text("扫描长度 \(Fmt.mm(wall.length)) · 高 \(Fmt.mm(wall.height))") + Text(wall.isCurved ? String(localized: " · 弧形墙（近似）") : "")
                 .font(.subheadline)
-            if !openings.isEmpty {
-                Text(openings.map { "\($0.kind == .door ? "门" : $0.kind == .window ? "窗" : "洞口") \(Fmt.mm($0.width))×\(Fmt.mm($0.height))" }
-                    .joined(separator: "，"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(openings) { o in
+                        Button("\(L10n.title(o)) \(Fmt.mm(o.width))×\(Fmt.mm(o.height))") { editingOpening = o }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
+                    Button("加门", systemImage: "plus") { addOpening(.door, on: wall) }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    Button("加窗", systemImage: "plus") { addOpening(.window, on: wall) }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
             }
             HStack {
-                Text(wall.measuredLength.map { "实测 \(Fmt.mm($0))" } ?? "还没有实测值")
+                Text(wall.measuredLength.map { String(localized: "实测 \(Fmt.mm($0))") } ?? String(localized: "还没有实测值"))
                     .font(.subheadline)
                     .foregroundStyle(wall.measuredLength == nil ? .secondary : .primary)
                 Spacer()
-                Button(wall.measuredLength == nil ? "填实测值" : "修改实测值") {
+                Button(wall.measuredLength == nil ? String(localized: "填实测值") : String(localized: "修改实测值")) {
                     measuredInput = wall.measuredLength.map(Fmt.mm) ?? ""
                     showMeasuredAlert = true
                 }
@@ -291,7 +320,8 @@ struct ProjectDetailView: View {
         }
         switch tool {
         case .inspect:
-            if case .wall(let id, _) = hit {
+            if case .wall(let id, let p) = hit {
+                selectedWallPoint = p.xy
                 selectedWallId = selectedWallId == id ? nil : id
             } else {
                 selectedWallId = nil
@@ -316,6 +346,45 @@ struct ProjectDetailView: View {
                 position: p, endPosition: nil, distance: nil, photos: [],
                 cameraPosition: nil, cameraDirection: nil, createdAt: Date())
         }
+    }
+
+    private func handlePlanHit(_ hit: PlanHit) {
+        switch hit {
+        case .opening(let id):
+            editingOpening = plan.opening(id)
+        case .wall(let id, let p):
+            selectedWallPoint = p
+            selectedWallId = selectedWallId == id ? nil : id
+        case .nothing:
+            selectedWallId = nil
+        }
+    }
+
+    /// 在选中的墙上加一个门或窗，位置放在刚才点到的地方
+    private func addOpening(_ kind: FloorPlanData.OpeningKind, on wall: FloorPlanData.Wall) {
+        let width = kind == .door ? 0.9 : 1.2
+        var center = wall.length / 2
+        if let p = selectedWallPoint { center = (p - wall.start).dot(wall.direction) }
+        center = min(max(center, width / 2), max(wall.length - width / 2, width / 2))
+        editingOpening = FloorPlanData.Opening(
+            id: "\(kind == .door ? "D" : "WIN")\(UUID().uuidString.prefix(4))", kind: kind, wallId: wall.id,
+            centerOffset: center, width: min(width, wall.length),
+            height: kind == .door ? min(2.1, wall.height) : 1.2, sillHeight: kind == .door ? 0 : 0.9,
+            isOpen: nil, style: kind == .door ? .swingDoor : .slidingWindow)
+    }
+
+    private func saveOpening(_ o: FloorPlanData.Opening) {
+        if let i = project.plan.openings.firstIndex(where: { $0.id == o.id }) {
+            project.plan.openings[i] = o
+        } else {
+            project.plan.openings.append(o)
+        }
+        persist()
+    }
+
+    private func deleteOpening(_ id: String) {
+        project.plan.openings.removeAll { $0.id == id }
+        persist()
     }
 
     private func point(of hit: ViewerHit) -> Vec3? {

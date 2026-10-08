@@ -5,7 +5,7 @@ import UIKit
 enum ExportPackager {
     enum PackError: LocalizedError {
         case zipFailed
-        var errorDescription: String? { "压缩导出包失败" }
+        var errorDescription: String? { String(localized: "压缩导出包失败") }
     }
 
     static func makePackage(project: Project, projectDir: URL) throws -> URL {
@@ -72,11 +72,23 @@ enum ExportPackager {
     private static func safeName(_ s: String) -> String {
         let bad = CharacterSet(charactersIn: "/\\:*?\"<>| ")
         let cleaned = s.components(separatedBy: bad).filter { !$0.isEmpty }.joined(separator: "_")
-        return cleaned.isEmpty ? "户型" : cleaned
+        return cleaned.isEmpty ? "RoomScan" : cleaned
     }
 
-    static func readme(_ plan: FloorPlanData) -> String {
-        var rows = "| 房间 id | 名称 | 面积 ㎡ | 层高 mm | 墙 |\n|---|---|---|---|---|\n"
+    /// 给 AI 的说明：界面是中文时用中文模板，其他语言用英文模板
+    static func readme(_ plan: FloorPlanData, chinese: Bool = L10n.isChinese) -> String {
+        struct Words {
+            var tableHeader, noText, photosLabel, noteLabel, measureLabel, noNotes, scanned, measured, noMeasured: String
+        }
+        let w = chinese
+            ? Words(tableHeader: "| 房间 id | 名称 | 面积 ㎡ | 层高 mm | 墙 |", noText: "（无文字）", photosLabel: " 照片：",
+                    noteLabel: "备注", measureLabel: "测距", noNotes: "- （没有标注）", scanned: "扫描", measured: "实测",
+                    noMeasured: "- （没有填写实测值）")
+            : Words(tableHeader: "| Room id | Name | Area m² | Height mm | Walls |", noText: "(no text)", photosLabel: " Photos: ",
+                    noteLabel: "Note", measureLabel: "Measurement", noNotes: "- (no annotations)", scanned: "scanned",
+                    measured: "measured", noMeasured: "- (no tape-measured values)")
+
+        var rows = w.tableHeader + "\n|---|---|---|---|---|\n"
         for r in plan.rooms {
             let walls = plan.walls.filter { $0.roomIds.contains(r.id) }.map(\.id).joined(separator: ", ")
             rows += "| \(r.id) | \(r.name) | \(Fmt.area(r.area)) | \(Fmt.mm(r.height)) | \(walls) |\n"
@@ -87,20 +99,20 @@ enum ExportPackager {
             let pos = "(\(Fmt.mm(a.position.x)), \(Fmt.mm(a.position.y)), \(Fmt.mm(a.position.z)))"
             switch a.kind {
             case .note:
-                let photos = a.photos.isEmpty ? "" : " 照片：\(a.photos.joined(separator: "、"))"
-                notes += "- 备注 \(a.number) @ \(pos) mm：\(a.text.isEmpty ? "（无文字）" : a.text)\(photos)\n"
+                let photos = a.photos.isEmpty ? "" : w.photosLabel + a.photos.joined(separator: ", ")
+                notes += "- \(w.noteLabel) \(a.number) @ \(pos) mm: \(a.text.isEmpty ? w.noText : a.text)\(photos)\n"
             case .measurement:
-                notes += "- 测距 \(a.number)：\(Fmt.mm(a.distance ?? 0)) mm \(a.text)\n"
+                notes += "- \(w.measureLabel) \(a.number): \(Fmt.mm(a.distance ?? 0)) mm \(a.text)\n"
             }
         }
-        if notes.isEmpty { notes = "- （没有标注）\n" }
+        if notes.isEmpty { notes = w.noNotes + "\n" }
 
         let measured = plan.walls.filter { $0.measuredLength != nil }
-            .map { "- \($0.id)：扫描 \(Fmt.mm($0.length)) mm，实测 \(Fmt.mm($0.measuredLength!)) mm" }
+            .map { "- \($0.id): \(w.scanned) \(Fmt.mm($0.length)) mm, \(w.measured) \(Fmt.mm($0.measuredLength!)) mm" }
             .joined(separator: "\n")
 
         let template: String
-        if let url = Bundle.main.url(forResource: "AI_README", withExtension: "md"),
+        if let url = Bundle.main.url(forResource: chinese ? "AI_README" : "AI_README_en", withExtension: "md"),
            let s = try? String(contentsOf: url, encoding: .utf8) {
             template = s
         } else {
@@ -115,6 +127,6 @@ enum ExportPackager {
             .replacingOccurrences(of: "{{ROOM_COUNT}}", with: "\(plan.rooms.count)")
             .replacingOccurrences(of: "{{ROOM_TABLE}}", with: rows)
             .replacingOccurrences(of: "{{ANNOTATIONS}}", with: notes)
-            .replacingOccurrences(of: "{{MEASURED}}", with: measured.isEmpty ? "- （没有填写实测值）" : measured)
+            .replacingOccurrences(of: "{{MEASURED}}", with: measured.isEmpty ? w.noMeasured : measured)
     }
 }

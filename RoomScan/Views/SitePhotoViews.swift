@@ -12,7 +12,7 @@ struct SitePhotoGallery: View {
         var result: [(String, [FloorPlanData.SitePhoto])] = plan.rooms.map { room in
             (room.name, plan.sitePhotos.filter { $0.roomId == room.id })
         }
-        result.append(("其他", plan.sitePhotos.filter { p in p.roomId == nil || plan.room(p.roomId!) == nil }))
+        result.append((String(localized: "其他"), plan.sitePhotos.filter { p in p.roomId == nil || plan.room(p.roomId!) == nil }))
         return result.filter { !$0.1.isEmpty }
     }
 
@@ -91,9 +91,9 @@ struct SitePhotoViewer: View {
     private var info: String {
         var parts: [String] = []
         if let r = photo.roomId.flatMap({ plan.room($0) }) { parts.append(r.name) }
-        if let w = photo.wallId { parts.append("拍的是墙 \(w)") }
-        parts.append(photo.isAuto ? "自动拍摄" : "手动拍摄")
-        parts.append("离地 \(Fmt.mm(photo.cameraPosition.z)) mm")
+        if let w = photo.wallId { parts.append(String(localized: "拍的是墙 \(w)")) }
+        parts.append(photo.isAuto ? String(localized: "自动拍摄") : String(localized: "手动拍摄"))
+        parts.append(String(localized: "离地 \(Fmt.mm(photo.cameraPosition.z)) mm"))
         return parts.joined(separator: " · ")
     }
 

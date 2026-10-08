@@ -264,6 +264,11 @@ def build(scene_path):
             obj["width_mm"] = round(o["width"] * 1000)
             obj["height_mm"] = round(o["height"] * 1000)
             obj["sill_mm"] = round(o["sillHeight"] * 1000)
+            obj["style"] = o.get("style") or "unknown"
+            if o.get("hinge"):
+                obj["hinge"] = o["hinge"]
+            if o.get("opensOutward") is not None:
+                obj["opens_outward"] = bool(o["opensOutward"])
 
     for fx in data.get("fixtures", []):
         c, s = fx["center"], fx["size"]

@@ -28,6 +28,10 @@
 - `walls[].height`：墙高。**比所在房间层高低的墙，通常说明那里有梁或吊顶**，高度就是梁底/吊顶底离地的高度（扫描没有单独识别梁，只是近似）
 - `walls[].measuredLength`：用户用卷尺实测的墙长。**有值时以实测值为准**
 - `openings[]`：门窗洞口。`centerOffset` 是洞口中心到墙 `start` 的距离，`sillHeight` 是离地高度
+  - `style`：用户标注的样式。门：`swingDoor` 平开门、`slidingDoor` 推拉门、`foldingDoor` 折叠门；
+    窗：`casementWindow` 平开窗、`slidingWindow` 推拉窗、`fixedWindow` 固定窗、`awningWindow` 上悬窗。没有这个字段表示用户还没确认
+  - `hinge`：门轴 / 合页在哪边（`left` / `right`），按「站在房间里、面朝这面墙」来看，也就是从 `outward` 的反方向看过去
+  - `opensOutward`：平开门是否往房间外开，`false` 或没有表示往里开
 - `fixtures[]`：马桶、洗手盆、灶台等固定设施的位置。它们决定**下水、排烟、电位**，做设计时不要随意移动
 - `annotations[]`：用户备注（note）和测距（measurement），`photos` 是照片路径
 - `sitePhotos[]`：现场照片（扫描时自动拍的，`isAuto: true`，以及手动拍的）。每张都有拍摄相机的 `cameraPosition`、

@@ -33,7 +33,7 @@ struct AnnotationSheet: View {
                 }
 
                 Section("备注") {
-                    TextField(annotation.kind == .note ? "例如：这面墙做电视柜，留 3 个插座" : "这段距离是量什么的（可不填）",
+                    TextField(annotation.kind == .note ? String(localized: "例如：这面墙做电视柜，留 3 个插座") : String(localized: "这段距离是量什么的（可不填）"),
                               text: $annotation.text, axis: .vertical)
                         .lineLimit(3...8)
                 }
@@ -86,7 +86,7 @@ struct AnnotationSheet: View {
                     }
                 }
             }
-            .navigationTitle(isNew ? "新备注" : (annotation.kind == .note ? "备注 \(annotation.number)" : "测距 \(annotation.number)"))
+            .navigationTitle(isNew ? String(localized: "新备注") : (annotation.kind == .note ? String(localized: "备注 \(annotation.number)") : String(localized: "测距 \(annotation.number)")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

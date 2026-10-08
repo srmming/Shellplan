@@ -94,7 +94,7 @@ enum SceneBuilder {
 
         for room in plan.rooms where room.floorPolygon.count >= 3 {
             let c = Geo.centroid(room.floorPolygon)
-            let text = "\(room.name) \(Fmt.area(room.area))㎡ · 层高 \(Fmt.mm(room.height))"
+            let text = String(localized: "\(room.name) \(Fmt.area(room.area))㎡ · 层高 \(Fmt.mm(room.height))")
             root.addChildNode(label(text, at: Vec3(c.x, c.y, 0.15), color: .label, fontSize: 13))
 
             // 房间一角的竖向层高标尺
@@ -114,7 +114,7 @@ enum SceneBuilder {
                 tick.categoryBitMask = labelCategory
                 root.addChildNode(tick)
             }
-            root.addChildNode(label("高 \(Fmt.mm(room.height))", at: Vec3(p.x, p.y, room.height / 2), color: dimColor, fontSize: 12))
+            root.addChildNode(label(String(localized: "高 \(Fmt.mm(room.height))"), at: Vec3(p.x, p.y, room.height / 2), color: dimColor, fontSize: 12))
         }
 
         for wall in plan.walls {
@@ -122,8 +122,8 @@ enum SceneBuilder {
             let inRoom = roomFilter == nil || wall.roomIds.contains(roomFilter!)
             guard inRoom || isSelected else { continue }
             var text = Fmt.mm(wall.length)
-            if let m = wall.measuredLength { text += "（实测 \(Fmt.mm(m))）" }
-            if let h = plan.differingWallHeight(wall) { text += " · 高 \(Fmt.mm(h))" }
+            if let m = wall.measuredLength { text += String(localized: "（实测 \(Fmt.mm(m))）") }
+            if let h = plan.differingWallHeight(wall) { text += String(localized: " · 高 \(Fmt.mm(h))") }
             let mid = wall.midpoint
             root.addChildNode(label(text, at: Vec3(mid.x, mid.y, wall.height + 0.15),
                                     color: isSelected ? selectedColor : dimColor, fontSize: 12))
@@ -137,9 +137,8 @@ enum SceneBuilder {
             let z = o.sillHeight + o.height / 2
             let text: String
             switch o.kind {
-            case .door: text = "门 \(Fmt.mm(o.width))×\(Fmt.mm(o.height))"
-            case .window: text = "窗 \(Fmt.mm(o.width))×\(Fmt.mm(o.height)) 离地\(Fmt.mm(o.sillHeight))"
-            case .opening: text = "洞口 \(Fmt.mm(o.width))×\(Fmt.mm(o.height))"
+            case .door, .opening: text = "\(L10n.title(o)) \(Fmt.mm(o.width))×\(Fmt.mm(o.height))"
+            case .window: text = String(localized: "\(L10n.title(o)) \(Fmt.mm(o.width))×\(Fmt.mm(o.height)) 离地\(Fmt.mm(o.sillHeight))")
             }
             root.addChildNode(label(text, at: Vec3(p.x, p.y, z), color: o.kind == .door ? .systemGreen : .systemBlue, fontSize: 10))
         }
@@ -178,7 +177,7 @@ enum SceneBuilder {
                     root.addChildNode(dot)
                 }
                 let mid = (ann.position + end) * 0.5
-                root.addChildNode(label("测 \(Fmt.mm(ann.distance ?? Double(len)))", at: mid + Vec3(0, 0, 0.1),
+                root.addChildNode(label(String(localized: "测 \(Fmt.mm(ann.distance ?? Double(len)))"), at: mid + Vec3(0, 0, 0.1),
                                         color: measureColor, fontSize: 11))
             }
         }

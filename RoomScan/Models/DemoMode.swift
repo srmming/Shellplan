@@ -30,14 +30,17 @@ enum DemoMode {
             p.annotations = []
             return p
         }
+        let homeName = String(localized: "我家")
+        let studioName = String(localized: "工作室")
+        let bathName = String(localized: "爸妈家卫生间")
         var home = full
-        home.meta.projectName = "我家"
+        home.meta.projectName = homeName
         return [
-            Project(id: UUID(), name: "我家", createdAt: base, updatedAt: base.addingTimeInterval(3 * 86_400), plan: home),
-            Project(id: UUID(), name: "工作室", createdAt: base, updatedAt: base.addingTimeInterval(2 * 86_400),
-                    plan: subset(["R1"], name: "工作室")),
-            Project(id: UUID(), name: "爸妈家卫生间", createdAt: base, updatedAt: base.addingTimeInterval(86_400),
-                    plan: subset(["R3"], name: "爸妈家卫生间")),
+            Project(id: UUID(), name: homeName, createdAt: base, updatedAt: base.addingTimeInterval(3 * 86_400), plan: home),
+            Project(id: UUID(), name: studioName, createdAt: base, updatedAt: base.addingTimeInterval(2 * 86_400),
+                    plan: subset(["R1"], name: studioName)),
+            Project(id: UUID(), name: bathName, createdAt: base, updatedAt: base.addingTimeInterval(86_400),
+                    plan: subset(["R3"], name: bathName)),
         ]
     }
 }

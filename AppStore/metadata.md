@@ -71,6 +71,8 @@ LiDAR 量房，一键导出给 AI
 全屋白模是开源软件（MIT 许可证），源代码在 GitHub：github.com/srmming/RoomScan
 
 设备要求：带 LiDAR 的 iPhone（iPhone 12 Pro 及之后的 Pro / Pro Max 机型）。没有 LiDAR 的设备可以加载示例户型查看效果。
+
+支持简体中文、繁體中文、English、Español、日本語。
 ```
 
 **关键词**（100 字节，已核对 99 字节）
@@ -80,9 +82,7 @@ LiDAR,量房,户型图,平面图,测量,装修,3D扫描,白模,建模,Blender,Ro
 
 **此版本的新内容**（首个版本不需要填）
 
-## English (U.S.)：可选，给海外用户看
-
-建议加上，因为除中国大陆以外的地区很多用户看英文商店页面。App 界面目前是中文，描述里已经写明。
+## English (U.S.)
 
 **Name**（30）
 ```
@@ -127,12 +127,173 @@ Everything stays on your device. The app has no network features and collects no
 OPEN SOURCE
 MIT licensed: github.com/srmming/RoomScan
 
-Requires an iPhone with LiDAR (iPhone 12 Pro or later Pro models). The app interface is in Chinese.
+Requires an iPhone with LiDAR (iPhone 12 Pro or later Pro models). Available in English, Spanish, Japanese, Simplified and Traditional Chinese.
 ```
 
 **Keywords**（100 字节，已核对 95 字节）
 ```
 LiDAR,floor plan,room scan,measure,whitebox,Blender,RoomPlan,interior design,3D scan,renovation
+```
+
+## Español (España) / Español (México)
+
+两个西班牙语区都用同一份。
+
+**Nombre**（30）
+```
+RoomScan: escaneo LiDAR
+```
+
+**Subtítulo**（30）
+```
+Escaneo LiDAR para diseño IA
+```
+
+**Texto promocional**（170）
+```
+Escanea tu casa habitación por habitación con el LiDAR del iPhone. Obtén un modelo 3D vacío, un plano con medidas y fotos automáticas, listos para diseñar con IA en Blender.
+```
+
+**Descripción**
+```
+RoomScan convierte tu iPhone con LiDAR en una herramienta para medir toda tu vivienda, pensada para el diseño de interiores con IA.
+
+ESCANEA HABITACIÓN POR HABITACIÓN
+Basado en Apple RoomPlan. Recorre cada habitación despacio, ponle nombre y pasa a la siguiente: se unen en un solo plano automáticamente.
+
+FOTOS AUTOMÁTICAS
+Mientras escaneas, se hace una foto cada vez que te quedas quieto, con la posición y orientación de la cámara y la pared que muestra.
+
+MODELO VACÍO
+Solo paredes, suelos y huecos reales de puertas y ventanas. Se eliminan todos los muebles.
+
+MEDIDAS INCLUIDAS
+Longitud de paredes, altura de techos, medidas de puertas y ventanas y altura del antepecho. Las paredes más bajas bajo vigas muestran su propia altura.
+
+MIDE Y ANOTA
+Mide entre dos puntos, añade notas y fotos en cualquier lugar e introduce medidas tomadas con cinta.
+
+EXPORTA PARA IA
+Un zip con modelos OBJ/USD, planos PNG/PDF (mm), un scene.json estructurado, fotos, un script de Blender que reconstruye el modelo a escala real y recrea cada cámara, y una guía escrita para la IA.
+
+PRIVACIDAD
+Todo se queda en tu dispositivo. La app no usa la red ni recopila datos.
+
+CÓDIGO ABIERTO
+Licencia MIT: github.com/srmming/RoomScan
+
+Requiere un iPhone con LiDAR (iPhone 12 Pro o modelos Pro posteriores).
+```
+
+**Palabras clave**（100 字节，已核对 95 字节）
+```
+LiDAR,plano,medir,escáner 3D,habitación,reforma,diseño interior,Blender,RoomPlan,planta,casa
+```
+
+## 日本語
+
+**名前**（30）
+```
+RoomScan 間取りスキャン
+```
+
+**サブタイトル**（30）
+```
+LiDAR 採寸、AI へ書き出し
+```
+
+**プロモーションテキスト**（170）
+```
+iPhone の LiDAR で部屋ごとにスキャンして家全体の間取りに。家具のない白モデルと寸法入り平面図、自動撮影の写真を、Blender で AI とインテリアデザインするために書き出せます。
+```
+
+**説明**
+```
+RoomScan は、LiDAR 搭載 iPhone を家全体の採寸ツールに変えるアプリです。AI を使ったインテリアデザインのために作られています。
+
+部屋ごとにスキャン
+Apple RoomPlan を利用。部屋をゆっくり一周して名前を付け、次の部屋へ。最後に家全体の間取りへ自動でつながります。
+
+自動撮影
+スキャン中に止まると自動で写真を撮影し、カメラの位置・向きと写っている壁を記録します。
+
+家具のない白モデル
+壁・床と、実際に開いたドアと窓の開口だけを残し、家具はすべて取り除きます。
+
+寸法を自動表示
+壁の長さ、天井高、ドアと窓の寸法と床からの高さ。梁の下の低い壁は、その高さも表示します。
+
+計測とメモ
+2 点間の距離を測ったり、好きな場所にメモや写真を追加したり、メジャーで測った実測値を入力したりできます。
+
+AI 向けに書き出し
+OBJ/USD モデル、PNG/PDF の寸法入り平面図（mm）、構造化データ scene.json、写真、実寸でモデルを再構築して各写真のカメラも再現する Blender スクリプト、AI 向けの説明書を 1 つの zip にまとめます。
+
+プライバシー
+データはすべて端末内に保存されます。通信機能はなく、データを収集しません。
+
+オープンソース
+MIT ライセンス：github.com/srmming/RoomScan
+
+LiDAR 搭載の iPhone（iPhone 12 Pro 以降の Pro モデル）が必要です。
+```
+
+**キーワード**（100 字节，已核对 96 字节）
+```
+LiDAR,間取り,採寸,平面図,3Dスキャン,リフォーム,インテリア,Blender,RoomPlan
+```
+
+## 繁體中文（台灣、香港通用）
+
+**名稱**（30）
+```
+全屋白模
+```
+
+**副標題**（30）
+```
+LiDAR 量房，一鍵匯出給 AI
+```
+
+**宣傳文字**（170）
+```
+用 iPhone 的 LiDAR 一間一間掃描房間，自動拼成全屋，產生空房間白模和尺寸平面圖，掃描時自動拍照。一鍵打包給 AI，在 Blender 裡做室內設計。
+```
+
+**描述**
+```
+全屋白模用 iPhone 的 LiDAR 幫你量房：一間一間掃描，自動拼成全屋，產生去掉家具的空房間白模和帶尺寸的平面圖，再一鍵打包交給 AI，在 Blender 裡做室內設計。
+
+【一間一間地掃】
+基於 Apple RoomPlan。拿著手機在房間裡慢慢走一圈，掃完給房間取個名字，接著掃下一個房間，最後自動拼成全屋。
+
+【自動拍照】
+掃描時手機拿穩就會自動拍照，每張照片都記錄拍攝位置、朝向和拍到的是哪面牆。想拍清楚的細節，也可以手動拍。
+
+【空房間白模】
+只保留牆、地面和門窗。門洞、窗洞是真的挖空的，家具全部去掉，適合直接拿來做設計。
+
+【尺寸自動標好】
+牆長、樓高、門窗的寬高和離地高度都會自動標註。梁下面較矮的牆會單獨標出牆高，方便判斷梁的位置。
+
+【測距、備註、實測值】
+在 3D 模型上點兩個點測距，或者在任意位置加備註和照片。用捲尺量過的牆可以填上實測值，匯出時會一起告訴 AI。
+
+【一鍵匯出給 AI】
+打包成一個 zip，包含 OBJ / USD 白模、PNG / PDF 尺寸平面圖（單位 mm）、scene.json 結構化資料、現場照片、Blender 重建腳本（按真實尺寸重建白模，並為每張照片還原同角度的相機），以及寫給 AI 看的說明文件。
+
+【隱私】
+所有資料只儲存在你的手機上。App 不連網、不收集任何資料。
+
+【開源】
+全屋白模是開源軟體（MIT 授權），原始碼在 GitHub：github.com/srmming/RoomScan
+
+裝置需求：配備 LiDAR 的 iPhone（iPhone 12 Pro 及之後的 Pro / Pro Max 機型）。
+```
+
+**關鍵字**（100 字节，已核对 99 字节）
+```
+LiDAR,量房,格局圖,平面圖,測量,裝修,3D掃描,白模,建模,Blender,RoomPlan,室內設計
 ```
 
 ## App 隐私（App Privacy）
@@ -173,4 +334,4 @@ Source code: https://github.com/srmming/RoomScan
 
 ## 截图
 
-`AppStore/screenshots/` 里的 5 张（1320 × 2868，iPhone 6.9 寸），按文件名顺序上传。
+`AppStore/screenshots/<语言>/` 里各 5 张（1320 × 2868，iPhone 6.9 寸），按文件名顺序上传到对应语言。

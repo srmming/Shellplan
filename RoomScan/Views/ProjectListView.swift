@@ -69,7 +69,7 @@ struct ProjectListView: View {
         }
         .onAppear {
             if let screen = DemoMode.screen {
-                if ["model", "plan", "note", "export"].contains(screen), let first = store.projects.first {
+                if ["model", "plan", "note", "export", "door"].contains(screen), let first = store.projects.first {
                     path = [first.id]
                 }
             } else if !didShowOnboarding {
@@ -106,7 +106,7 @@ struct ProjectListView: View {
             .controlSize(.large)
             .disabled(!scanSupported)
 
-            Text(scanSupported ? "一个房间一个房间扫，最后自动拼成全屋" : "这台设备没有 LiDAR，不能扫描。可以先从右上角加载示例户型看看效果")
+            Text(scanSupported ? String(localized: "一个房间一个房间扫，最后自动拼成全屋") : String(localized: "这台设备没有 LiDAR，不能扫描。可以先从右上角加载示例户型看看效果"))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -118,12 +118,12 @@ struct ProjectListView: View {
     private var defaultProjectName: String {
         let df = DateFormatter()
         df.dateFormat = "MM-dd"
-        return "我的户型 \(df.string(from: Date()))"
+        return String(localized: "我的户型 \(df.string(from: Date()))")
     }
 
     private func loadSample() {
         let now = Date()
-        let project = Project(id: UUID(), name: "示例户型", createdAt: now, updatedAt: now, plan: SampleData.plan())
+        let project = Project(id: UUID(), name: String(localized: "示例户型"), createdAt: now, updatedAt: now, plan: SampleData.plan())
         store.save(project)
         path.append(project.id)
     }

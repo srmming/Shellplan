@@ -37,7 +37,7 @@ struct ExportSheet: View {
                 } label: {
                     HStack {
                         if isPacking { ProgressView().tint(.white) }
-                        Label(isPacking ? "正在打包…" : "打包分享", systemImage: "doc.zipper")
+                        Label(isPacking ? String(localized: "正在打包…") : String(localized: "打包分享"), systemImage: "doc.zipper")
                     }
                     .font(.headline)
                     .frame(maxWidth: .infinity)
@@ -62,7 +62,7 @@ struct ExportSheet: View {
         }
     }
 
-    private func item(_ icon: String, _ title: String, _ detail: String) -> some View {
+    private func item(_ icon: String, _ title: LocalizedStringKey, _ detail: LocalizedStringKey) -> some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -88,7 +88,7 @@ struct ExportSheet: View {
                 }
             } catch {
                 await MainActor.run {
-                    errorText = "打包失败：\(error.localizedDescription)"
+                    errorText = String(localized: "打包失败：\(error.localizedDescription)")
                     isPacking = false
                 }
             }

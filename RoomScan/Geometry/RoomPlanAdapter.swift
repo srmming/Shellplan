@@ -37,20 +37,20 @@ enum RoomPlanAdapter {
         let keys = Set(room.objects.compactMap { fixtureInfo($0.category)?.key })
         let base: String
         if keys.contains("toilet") || keys.contains("bathtub") {
-            base = "卫生间"
+            base = RoomName.bathroom
         } else if keys.contains("stove") || keys.contains("oven") {
-            base = "厨房"
+            base = RoomName.kitchen
         } else if let label = room.sections.first?.label {
             switch label {
-            case .livingRoom: base = "客厅"
-            case .bedroom: base = existing.contains("主卧") ? "次卧" : "主卧"
-            case .bathroom: base = "卫生间"
-            case .kitchen: base = "厨房"
-            case .diningRoom: base = "餐厅"
-            default: base = "房间"
+            case .livingRoom: base = RoomName.living
+            case .bedroom: base = existing.contains(RoomName.masterBedroom) ? RoomName.secondBedroom : RoomName.masterBedroom
+            case .bathroom: base = RoomName.bathroom
+            case .kitchen: base = RoomName.kitchen
+            case .diningRoom: base = RoomName.dining
+            default: return RoomName.generic(existing.count + 1)
             }
         } else {
-            base = "房间"
+            return RoomName.generic(existing.count + 1)
         }
         guard existing.contains(base) else { return base }
         var n = 2
@@ -88,7 +88,7 @@ enum RoomPlanAdapter {
             let category = room.sections.first.map { categoryKey($0.label) } ?? "unidentified"
             planRooms.append(FloorPlanData.Room(
                 id: "R\(i + 1)",
-                name: i < roomNames.count ? roomNames[i] : "房间\(i + 1)",
+                name: i < roomNames.count ? roomNames[i] : RoomName.generic(i + 1),
                 category: category,
                 floorPolygon: poly,
                 height: room.walls.map { Double($0.dimensions.y) }.max() ?? 2.7,
@@ -188,7 +188,7 @@ enum RoomPlanAdapter {
             if !ph.isAuto {
                 let n = annotations.count + 1
                 annotations.append(FloorPlanData.Annotation(
-                    id: "P\(n)", number: n, kind: .note, text: "扫描时拍的照片",
+                    id: "P\(n)", number: n, kind: .note, text: String(localized: "扫描时拍的照片"),
                     position: target, endPosition: nil, distance: nil, photos: [ph.relativePath],
                     cameraPosition: camPos, cameraDirection: dir, createdAt: ph.createdAt
                 ))
@@ -224,16 +224,16 @@ enum RoomPlanAdapter {
 
     static func fixtureInfo(_ c: CapturedRoom.Object.Category) -> (key: String, name: String)? {
         switch c {
-        case .toilet: return ("toilet", "马桶")
-        case .sink: return ("sink", "水槽/洗手盆")
-        case .bathtub: return ("bathtub", "浴缸")
-        case .stove: return ("stove", "灶台")
-        case .oven: return ("oven", "烤箱")
-        case .refrigerator: return ("refrigerator", "冰箱")
-        case .washerDryer: return ("washerDryer", "洗衣机/烘干机")
-        case .dishwasher: return ("dishwasher", "洗碗机")
-        case .fireplace: return ("fireplace", "壁炉")
-        case .stairs: return ("stairs", "楼梯")
+        case .toilet: return ("toilet", FixtureName.toilet)
+        case .sink: return ("sink", FixtureName.sink)
+        case .bathtub: return ("bathtub", String(localized: "浴缸"))
+        case .stove: return ("stove", String(localized: "灶台"))
+        case .oven: return ("oven", String(localized: "烤箱"))
+        case .refrigerator: return ("refrigerator", String(localized: "冰箱"))
+        case .washerDryer: return ("washerDryer", String(localized: "洗衣机/烘干机"))
+        case .dishwasher: return ("dishwasher", String(localized: "洗碗机"))
+        case .fireplace: return ("fireplace", String(localized: "壁炉"))
+        case .stairs: return ("stairs", String(localized: "楼梯"))
         default: return nil
         }
     }

@@ -96,13 +96,14 @@ struct FloorPlanData: Codable, Equatable {
                 device: DeviceInfo.model,
                 appVersion: DeviceInfo.appVersion,
                 units: "meters",
-                coordinateSystem: "右手坐标系，Z 轴朝上（与 Blender 一致），地面 z = 0",
+                coordinateSystem: "Right-handed, Z up (same as Blender), floor at z = 0",
                 notes: [
-                    "墙线 start/end 是房间内侧墙面的位置，墙厚 thickness 向 outward 方向挤出",
-                    "门窗 centerOffset 是洞口中心到墙 start 点的距离",
-                    "measuredLength 是用户用卷尺实测的墙长，有值时优先使用",
-                    "isCurved 为 true 的墙是弧形墙，这里近似成直线",
-                    "sitePhotos 是现场照片，cameraPosition/cameraDirection/cameraUp/verticalFov 可以还原拍摄相机",
+                    "Wall start/end lie on the room-side face of the wall; thickness extrudes toward `outward`",
+                    "Opening centerOffset is the distance from the wall start to the opening center",
+                    "Opening hinge left/right is as seen standing in the room facing the wall (looking toward outward); style is set by the user, missing means unconfirmed",
+                    "measuredLength is a tape-measured wall length entered by the user; prefer it when present",
+                    "Walls with isCurved = true are curved walls approximated as straight lines",
+                    "sitePhotos are on-site photos; cameraPosition/cameraDirection/cameraUp/verticalFov recreate the camera",
                 ]
             )
         }
@@ -135,10 +136,31 @@ struct FloorPlanData: Codable, Equatable {
 
         var direction: Vec2 { (end - start).normalized }
         var midpoint: Vec2 { (start + end) * 0.5 }
+        /// 站在房间里、面朝这面墙时「左手」的方向
+        var leftDirection: Vec2 { outward.perpendicular }
     }
 
-    enum OpeningKind: String, Codable {
+    enum OpeningKind: String, Codable, CaseIterable {
         case door, window, opening
+    }
+
+    /// 门窗样式。RoomPlan 识别不出来，由用户在 App 里标注；nil 表示还没确认
+    enum OpeningStyle: String, Codable, CaseIterable {
+        case swingDoor, slidingDoor, foldingDoor
+        case casementWindow, slidingWindow, fixedWindow, awningWindow
+
+        static func styles(for kind: OpeningKind) -> [OpeningStyle] {
+            switch kind {
+            case .door: return [.swingDoor, .slidingDoor, .foldingDoor]
+            case .window: return [.casementWindow, .slidingWindow, .fixedWindow, .awningWindow]
+            case .opening: return []
+            }
+        }
+    }
+
+    /// 门轴在哪一边：站在房间里、面朝这面墙时的左 / 右
+    enum HingeSide: String, Codable, CaseIterable {
+        case left, right
     }
 
     struct Opening: Codable, Identifiable, Hashable {
@@ -150,6 +172,11 @@ struct FloorPlanData: Codable, Equatable {
         var height: Double
         var sillHeight: Double
         var isOpen: Bool?
+        var style: OpeningStyle?
+        /// 平开门 / 平开窗的门轴位置
+        var hinge: HingeSide?
+        /// 平开门是否往房间外开（默认往里开）
+        var opensOutward: Bool?
     }
 
     /// 固定设施（马桶、灶台等），决定水电位，作为参考层
@@ -211,6 +238,23 @@ extension FloorPlanData {
     }
 
     var totalArea: Double { rooms.reduce(0) { $0 + $1.area } }
+
+    func opening(_ id: String) -> Opening? { openings.first { $0.id == id } }
+
+    /// 门窗在墙线（房间内侧墙面）上的两个端点
+    func segment(of o: Opening) -> (Vec2, Vec2)? {
+        guard let w = wall(o.wallId) else { return nil }
+        let d = w.direction
+        return (w.start + d * (o.centerOffset - o.width / 2), w.start + d * (o.centerOffset + o.width / 2))
+    }
+
+    /// 门窗左边缘到左侧墙角、右边缘到右侧墙角的距离（站在房间里面朝这面墙看）
+    func cornerGaps(of o: Opening) -> (left: Double, right: Double)? {
+        guard let w = wall(o.wallId) else { return nil }
+        let startGap = o.centerOffset - o.width / 2
+        let endGap = w.length - (o.centerOffset + o.width / 2)
+        return w.direction.dot(w.leftDirection) > 0 ? (endGap, startGap) : (startGap, endGap)
+    }
     var maxHeight: Double { rooms.map(\.height).max() ?? walls.map(\.height).max() ?? 0 }
     var nextAnnotationNumber: Int { (annotations.map(\.number).max() ?? 0) + 1 }
 

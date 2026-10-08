@@ -41,6 +41,8 @@
 
 所有数据只保存在手机本地，App 不联网、不收集任何数据。
 
+界面语言：简体中文、繁體中文、English、Español、日本語，跟随系统语言自动切换。
+
 ## 设备要求
 
 - 带 LiDAR 的 iPhone（iPhone 12 Pro 及之后的 Pro / Pro Max）
@@ -71,7 +73,7 @@ open RoomScan.xcodeproj
 | `RoomScan/Viewer/` | SceneKit 3D 查看：尺寸标签、点选、测距、备注、照片位置 |
 | `RoomScan/Export/` | 尺寸平面图（PNG / PDF）、OBJ、USDA、导出包打包 |
 | `RoomScan/Resources/` | `build_whitebox.py`（Blender 重建脚本）、`AI_README.md`（给 AI 的说明模板） |
-| `Design/` | 图标源文件（SVG）和生成脚本 |
+| `Design/` | 图标源文件（SVG）和生成脚本；`translations.py` 是界面翻译表 |
 | `docs/` | 项目网站（GitHub Pages）：介绍、隐私政策、技术支持 |
 
 `Geometry/WhiteboxBuilder.swift` 和 `Resources/build_whitebox.py` 用的是同一套切墙和补角算法，改其中一个时另一个也要同步改。
@@ -87,7 +89,7 @@ open RoomScan.xcodeproj
 3. View the empty whitebox model with wall lengths, ceiling heights, and door/window sizes. Add measurements, notes, photos, and tape-measured values.
 4. Export a zip with OBJ/USDA whitebox, dimensioned floor plan (PNG/PDF), `scene.json`, photos, and a Blender script that rebuilds the model and recreates every photo camera.
 
-Everything stays on the device. The app has no network features and collects no data. The UI is currently in Chinese.
+Everything stays on the device. The app has no network features and collects no data. Available in English, Spanish, Japanese, Simplified and Traditional Chinese.
 
 Build: `brew install xcodegen && xcodegen generate`, then open the project in Xcode, set your own team and bundle identifier, and run on a LiDAR iPhone.
 
