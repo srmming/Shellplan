@@ -41,10 +41,10 @@ struct ProjectListView: View {
                     Menu {
                         Button("加载示例户型", systemImage: "square.stack.3d.up") { loadSample() }
                         Button("使用说明", systemImage: "questionmark.circle") { showOnboarding = true }
-                        Link(destination: URL(string: "https://github.com/srmming/RoomScan/issues")!) {
+                        Link(destination: URL(string: "https://github.com/srmming/Roomprint/issues")!) {
                             Label("反馈问题", systemImage: "exclamationmark.bubble")
                         }
-                        Link(destination: URL(string: "https://github.com/srmming/RoomScan")!) {
+                        Link(destination: URL(string: "https://github.com/srmming/Roomprint")!) {
                             Label("源代码（开源）", systemImage: "chevron.left.forwardslash.chevron.right")
                         }
                     } label: {

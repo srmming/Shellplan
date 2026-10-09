@@ -8,31 +8,31 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "全屋白模"
+            "value": "AI 装修底图"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "全屋白模"
+            "value": "AI 裝修底圖"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "RoomScan"
+            "value": "Roomprint"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "RoomScan"
+            "value": "Roomprint"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "RoomScan"
+            "value": "Roomprint"
           }
         }
       }

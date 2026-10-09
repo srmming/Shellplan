@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/icon.png" width="128" alt="全屋白模图标">
+  <img src="docs/assets/icon.png" width="128" alt="AI 装修底图图标">
 </p>
 
-<h1 align="center">全屋白模 · RoomScan</h1>
+<h1 align="center">AI 装修底图 · Roomprint</h1>
 
 <p align="center">
   用 iPhone 的 LiDAR 一间一间扫描房间，自动拼成全屋，生成<b>空房间白模</b>和<b>带尺寸的平面图</b>，一键导出给 AI 在 Blender 里做室内设计。<br>
@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://srmming.github.io/RoomScan/">网站 Website</a> ·
-  <a href="https://srmming.github.io/RoomScan/privacy.html">隐私政策 Privacy</a> ·
-  <a href="https://github.com/srmming/RoomScan/issues">反馈 Feedback</a>
+  <a href="https://srmming.github.io/Roomprint/">网站 Website</a> ·
+  <a href="https://srmming.github.io/Roomprint/privacy.html">隐私政策 Privacy</a> ·
+  <a href="https://github.com/srmming/Roomprint/issues">反馈 Feedback</a>
 </p>
 
 <p align="center">
@@ -54,8 +54,8 @@
 
 ```bash
 brew install xcodegen
-git clone https://github.com/srmming/RoomScan.git
-cd RoomScan
+git clone https://github.com/srmming/Roomprint.git
+cd Roomprint
 xcodegen generate
 open RoomScan.xcodeproj
 ```
@@ -83,7 +83,7 @@ open RoomScan.xcodeproj
 
 ## English
 
-**RoomScan** turns an iPhone with LiDAR into a whole-home measuring tool:
+**Roomprint** turns an iPhone with LiDAR into a whole-home measuring tool:
 
 1. Scan each room with Apple RoomPlan and name it; rooms are merged into one floor plan automatically.
 2. Photos are captured automatically while scanning, each with its camera pose and the wall it shows.

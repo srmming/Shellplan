@@ -14,7 +14,7 @@ settings:
     DEVELOPMENT_TEAM: U33A8DX2JT
     TARGETED_DEVICE_FAMILY: "1"
     MARKETING_VERSION: "1.0"
-    CURRENT_PROJECT_VERSION: "1"
+    CURRENT_PROJECT_VERSION: "2"
 targets:
   RoomScan:
     type: application
@@ -28,7 +28,7 @@ targets:
     info:
       path: RoomScan/Info.plist
       properties:
-        CFBundleDisplayName: 全屋白模
+        CFBundleDisplayName: AI 装修底图
         CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)

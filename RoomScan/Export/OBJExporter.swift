@@ -5,7 +5,7 @@ import Foundation
 /// 导入后的坐标和 scene.json 完全一致。
 enum OBJExporter {
     static func export(_ plan: FloorPlanData, whitebox wb: Whitebox) -> (obj: String, mtl: String) {
-        var out = "# RoomScan whitebox — \(plan.meta.projectName)\n# Units: meters. Written Y-up; Blender's default OBJ import restores the Z-up coordinates of scene.json\n"
+        var out = "# Roomprint whitebox — \(plan.meta.projectName)\n# Units: meters. Written Y-up; Blender's default OBJ import restores the Z-up coordinates of scene.json\n"
         out += "mtllib whitebox.mtl\n"
         var vertexCount = 0
 
@@ -38,7 +38,7 @@ enum OBJExporter {
         for box in wb.fixtures { writeBox(box, material: "Reference") }
 
         let mtl = """
-        # RoomScan 白模材质
+        # Roomprint 白模材质
         newmtl Wall
         Kd 0.95 0.95 0.95
         newmtl Floor

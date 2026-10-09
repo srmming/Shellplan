@@ -72,7 +72,7 @@ enum ExportPackager {
     private static func safeName(_ s: String) -> String {
         let bad = CharacterSet(charactersIn: "/\\:*?\"<>| ")
         let cleaned = s.components(separatedBy: bad).filter { !$0.isEmpty }.joined(separator: "_")
-        return cleaned.isEmpty ? "RoomScan" : cleaned
+        return cleaned.isEmpty ? "Roomprint" : cleaned
     }
 
     /// 给 AI 的说明：界面是中文时用中文模板，其他语言用英文模板

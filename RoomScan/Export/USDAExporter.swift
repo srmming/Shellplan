@@ -10,7 +10,7 @@ enum USDAExporter {
             defaultPrim = "Whitebox"
             metersPerUnit = 1
             upAxis = "Z"
-            doc = "RoomScan whitebox: \(plan.meta.projectName.replacingOccurrences(of: "\"", with: "'"))"
+            doc = "Roomprint whitebox: \(plan.meta.projectName.replacingOccurrences(of: "\"", with: "'"))"
         )
 
         def Xform "Whitebox"
