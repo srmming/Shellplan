@@ -334,4 +334,4 @@ Source code: https://github.com/srmming/RoomScan
 
 ## 截图
 
-`AppStore/screenshots/<语言>/` 里各 5 张（1320 × 2868，iPhone 6.9 寸），按文件名顺序上传到对应语言。
+`AppStore/screenshots/<语言>/` 里各 6 张（1320 × 2868，iPhone 6.9 寸），按文件名顺序上传到对应语言。

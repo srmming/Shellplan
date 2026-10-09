@@ -195,7 +195,6 @@ T = {
     "水槽/洗手盆": ("Sink", "Fregadero/lavabo", "水槽/洗手台", "シンク／洗面台"),
     "洗碗机": ("Dishwasher", "Lavavajillas", "洗碗機", "食洗機"),
     "洗衣机/烘干机": ("Washer/dryer", "Lavadora/secadora", "洗衣機/烘乾機", "洗濯機／乾燥機"),
-    "洞 %@": ("Opening %@", "Hueco %@", "洞 %@", "開口 %@"),
     "洞口": ("Opening", "Hueco", "洞口", "開口"),
     "测 %@": ("↔ %@", "↔ %@", "測 %@", "計測 %@"),
     "测距": ("Measure", "Medir", "測距", "計測"),
@@ -242,8 +241,6 @@ T = {
     "离地 %@ mm": ("%@ mm above floor", "%@ mm sobre el suelo", "離地 %@ mm", "床から %@ mm"),
     "移除照片": ("Remove photo", "Quitar foto", "移除照片", "写真を削除"),
     "窗": ("Window", "Ventana", "窗", "窓"),
-    "窗 %@ 高%@ 离地%@": ("Window %@ H %@ sill %@", "Ventana %@ alto %@ antepecho %@", "窗 %@ 高%@ 離地%@", "窓 %@ 高さ%@ 床から%@"),
-    "窗 %@×%@ 离地%@": ("Window %@×%@ sill %@", "Ventana %@×%@ antepecho %@", "窗 %@×%@ 離地%@", "窓 %@×%@ 床から%@"),
     "第 %lld 个房间叫什么？": ("Name room %lld", "Nombre de la habitación %lld", "第 %lld 個房間叫什麼？", "部屋 %lld の名前"),
     "继续扫描": ("Keep scanning", "Seguir escaneando", "繼續掃描", "スキャンを続ける"),
     "自动拍摄": ("Automatic", "Automática", "自動拍攝", "自動撮影"),
@@ -284,7 +281,6 @@ T = {
     "重扫": ("Rescan", "Repetir", "重掃", "再スキャン"),
     "重新扫这个房间": ("Rescan this room", "Volver a escanear", "重新掃這個房間", "この部屋を再スキャン"),
     "门": ("Door", "Puerta", "門", "ドア"),
-    "门 %@": ("Door %@", "Puerta %@", "門 %@", "ドア %@"),
     "阳台": ("Balcony", "Balcón", "陽台", "バルコニー"),
     "餐厅": ("Dining room", "Comedor", "餐廳", "ダイニング"),
     "马桶": ("Toilet", "Inodoro", "馬桶", "トイレ"),
@@ -330,6 +326,7 @@ T = {
     "类型": ("Type", "Clase", "類型", "種別"),
     "门轴 / 合页": ("Hinge side", "Bisagras", "門軸 / 合頁", "吊り元"),
     "高": ("Height", "Alto", "高", "高さ"),
+    "x %@  y %@  离地 %@": ("x %@  y %@  height %@", "x %@  y %@  altura %@", "x %@  y %@  離地 %@", "x %@  y %@  床から %@"),
 }
 
 LANGS = ["en", "es", "zh-Hant", "ja"]

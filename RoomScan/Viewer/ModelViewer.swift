@@ -20,6 +20,8 @@ struct ModelViewer: UIViewRepresentable {
         let view = LayoutAwareSCNView()
         view.onLayout = { [weak coordinator = context.coordinator] in coordinator?.frameIfNeeded() }
         view.scene = context.coordinator.scene
+        // 一开始就挂上自己的相机：否则 SceneKit 可能抢先生成一个默认相机，取景就乱了
+        view.pointOfView = context.coordinator.cameraNode
         view.backgroundColor = .secondarySystemBackground
         view.allowsCameraControl = true
         view.autoenablesDefaultLighting = true
@@ -41,6 +43,7 @@ struct ModelViewer: UIViewRepresentable {
         let scene = SCNScene()
         /// 「Z 轴朝上」的容器，绕 X 轴转 -90° 后对齐 SceneKit 的 Y 轴朝上
         let container = SCNNode()
+        let cameraNode = SCNNode()
         weak var view: SCNView?
         var onTap: (ViewerHit) -> Void = { _ in }
 
@@ -57,6 +60,15 @@ struct ModelViewer: UIViewRepresentable {
             ambient.light?.type = .ambient
             ambient.light?.intensity = 500
             scene.rootNode.addChildNode(ambient)
+
+            let camera = SCNCamera()
+            camera.zNear = 0.05
+            camera.zFar = 200
+            camera.fieldOfView = 50
+            cameraNode.camera = camera
+            cameraNode.position = SCNVector3(0, 10, 10)
+            cameraNode.look(at: SCNVector3(0, 0, 0))
+            scene.rootNode.addChildNode(cameraNode)
         }
 
         func render(plan: FloorPlanData, options: ViewOptions) {
@@ -82,23 +94,16 @@ struct ModelViewer: UIViewRepresentable {
             guard let view else { return }
             let b = plan.bounds
             let center = Vec3((b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, 1.0)
-            // 竖屏时水平视野窄，镜头要退得更远才能把整套房子放进画面
-            let aspect = view.bounds.width / max(view.bounds.height, 1)
-            let distance = max(b.max.x - b.min.x, b.max.y - b.min.y, 3) * max(1, 0.62 / aspect)
-            let camLocal = Vec3(center.x, center.y - distance * 0.95, distance * 1.15)
-            let camWorld = container.convertPosition(camLocal.scn, to: nil)
+            // 从南边斜上方看过去，再让 SceneKit 按视图比例把所有墙收进画面
+            let span = max(b.max.x - b.min.x, b.max.y - b.min.y, 3)
+            let camLocal = Vec3(center.x, center.y - span * 0.75, span * 1.45)
             let target = container.convertPosition(center.scn, to: nil)
-
-            let cam = SCNNode()
-            cam.camera = SCNCamera()
-            cam.camera?.zNear = 0.05
-            cam.camera?.zFar = 200
-            cam.camera?.fieldOfView = 50
-            cam.position = camWorld
-            cam.look(at: target)
-            scene.rootNode.addChildNode(cam)
-            view.pointOfView = cam
+            cameraNode.position = container.convertPosition(camLocal.scn, to: nil)
+            cameraNode.look(at: target)
+            view.pointOfView = cameraNode
             view.defaultCameraController.target = target
+            let walls = container.childNodes.filter { $0.name?.hasPrefix("wall:") == true }
+            if !walls.isEmpty { view.defaultCameraController.frameNodes(walls) }
         }
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {

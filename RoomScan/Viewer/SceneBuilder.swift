@@ -29,7 +29,12 @@ enum SceneBuilder {
     private static let dimColor = UIColor.systemBlue
     private static let measureColor = UIColor.systemOrange
 
+    /// 标签放大倍数：房子越大，镜头离得越远，标签要跟着放大才看得清
+    private static var labelScale: Float = 1
+
     static func populate(_ root: SCNNode, plan: FloorPlanData, options: ViewOptions) {
+        let b = plan.bounds
+        labelScale = Float(max(1, max(b.max.x - b.min.x, b.max.y - b.min.y) / 5))
         let wb = WhiteboxBuilder.build(plan)
         let wallMat = material(wallColor)
         let selMat = material(selectedColor.withAlphaComponent(0.9))
@@ -246,7 +251,7 @@ enum SceneBuilder {
         let (lo, hi) = textNode.boundingBox
         let cx = (lo.x + hi.x) / 2, cy = (lo.y + hi.y) / 2
         textNode.pivot = SCNMatrix4MakeTranslation(cx, cy, 0)
-        textNode.scale = SCNVector3(0.01, 0.01, 0.01)
+        textNode.scale = SCNVector3(0.01 * labelScale, 0.01 * labelScale, 0.01 * labelScale)
         textNode.renderingOrder = 101
         textNode.categoryBitMask = labelCategory
 

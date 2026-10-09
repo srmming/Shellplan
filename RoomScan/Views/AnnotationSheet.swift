@@ -72,7 +72,7 @@ struct AnnotationSheet: View {
 
                 Section {
                     let p = annotation.position
-                    LabeledContent("位置", value: "x \(Fmt.mm(p.x))  y \(Fmt.mm(p.y))  离地 \(Fmt.mm(p.z))")
+                    LabeledContent("位置", value: String(localized: "x \(Fmt.mm(p.x))  y \(Fmt.mm(p.y))  离地 \(Fmt.mm(p.z))"))
                 } footer: {
                     Text("单位 mm，地面高度为 0。导出时这些会一起交给 AI。")
                 }
