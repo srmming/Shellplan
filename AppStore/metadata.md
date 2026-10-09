@@ -96,7 +96,7 @@ LiDAR floor plans & 3D models
 
 **Promotional Text**（170）
 ```
-Scan your home room by room with iPhone LiDAR. Get an empty whitebox 3D model, a dimensioned floor plan, and auto-captured photos — exported for AI interior design in Blender.
+Scan your home room by room with iPhone LiDAR. Get an empty 3D model, a dimensioned floor plan and auto photos, ready for AI interior design in Blender.
 ```
 
 **Description**
@@ -151,7 +151,7 @@ Planos LiDAR y modelo 3D
 
 **Texto promocional**（170）
 ```
-Escanea tu casa habitación por habitación con el LiDAR del iPhone. Obtén un modelo 3D vacío, un plano con medidas y fotos automáticas, listos para diseñar con IA en Blender.
+Escanea tu casa por habitaciones con el LiDAR del iPhone. Obtén un modelo 3D vacío, un plano con medidas y fotos automáticas para diseñar con IA en Blender.
 ```
 
 **Descripción**
