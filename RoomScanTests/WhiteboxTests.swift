@@ -59,7 +59,9 @@ final class WhiteboxTests: XCTestCase {
         let (obj, mtl) = OBJExporter.export(plan, whitebox: wb)
         let lines = obj.split(separator: "\n")
         let vertexCount = lines.filter { $0.hasPrefix("v ") }.count
-        let expected = (wb.walls.count + wb.fixtures.count) * 8 + (wb.floors + wb.ceilings).reduce(0) { $0 + $1.polygon.count }
+        let boxVertices = (wb.walls.count + wb.columns.count) * 8
+        let slabVertices = (wb.floors + wb.ceilings).reduce(0) { $0 + $1.polygon.count }
+        let expected = boxVertices + slabVertices
         XCTAssertEqual(vertexCount, expected)
         for face in lines where face.hasPrefix("f ") {
             for idx in face.split(separator: " ").dropFirst() {
@@ -85,7 +87,7 @@ final class WhiteboxTests: XCTestCase {
         let zip = try ExportPackager.makePackage(project: project, projectDir: FileManager.default.temporaryDirectory)
         XCTAssertEqual(zip.pathExtension, "zip")
         let folder = zip.deletingPathExtension()
-        for name in ["whitebox.obj", "whitebox.mtl", "whitebox.usda", "scene.json", "floorplan.png", "floorplan.pdf", "build_whitebox.py", "AI_README.md"] {
+        for name in ["whitebox.obj", "whitebox.mtl", "whitebox.usda", "whitebox.glb", "ai_images", "scene.json", "floorplan.png", "floorplan.pdf", "build_whitebox.py", "AI_README.md"] {
             XCTAssertTrue(FileManager.default.fileExists(atPath: folder.appendingPathComponent(name).path), "缺少 \(name)")
         }
         let readme = try String(contentsOf: folder.appendingPathComponent("AI_README.md"), encoding: .utf8)

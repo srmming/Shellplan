@@ -55,9 +55,34 @@ struct FloorPlanData: Codable, Equatable {
     var annotations: [Annotation]
     /// 现场照片（扫描时自动拍的 + 手动拍的），带相机位姿
     var sitePhotos: [SitePhoto] = []
+    /// 柱子：贴墙柱（由几段墙围成，自动识别）和独立柱（手动添加或自动识别）
+    var columns: [Column] = []
 
     enum CodingKeys: String, CodingKey {
-        case schemaVersion, meta, rooms, walls, openings, fixtures, annotations, sitePhotos
+        case schemaVersion, meta, rooms, walls, openings, fixtures, annotations, sitePhotos, columns
+    }
+
+    enum ColumnKind: String, Codable {
+        /// 贴墙柱 / 墙垛：已经由 wallIds 里的几段墙表示，不再单独生成几何体
+        case pilaster
+        /// 独立柱：单独生成一个方柱
+        case freestanding
+    }
+
+    struct Column: Codable, Identifiable, Hashable {
+        var id: String
+        var kind: ColumnKind
+        var center: Vec2
+        /// 沿 yaw 方向的宽
+        var width: Double
+        /// 垂直方向的深
+        var depth: Double
+        var yaw: Double
+        var height: Double
+        /// 组成这根贴墙柱的墙
+        var wallIds: [String]
+        /// detected = 自动识别，manual = 手动添加
+        var source: String
     }
 
     struct SitePhoto: Codable, Identifiable, Hashable {
@@ -224,6 +249,7 @@ extension FloorPlanData {
         fixtures = try c.decode([Fixture].self, forKey: .fixtures)
         annotations = try c.decode([Annotation].self, forKey: .annotations)
         sitePhotos = try c.decodeIfPresent([SitePhoto].self, forKey: .sitePhotos) ?? []
+        columns = try c.decodeIfPresent([Column].self, forKey: .columns) ?? []
     }
 
     func wall(_ id: String) -> Wall? { walls.first { $0.id == id } }

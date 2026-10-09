@@ -26,7 +26,7 @@ enum DemoMode {
             p.walls = p.walls.filter { !Set($0.roomIds).isDisjoint(with: roomIds) }
             let wallIds = Set(p.walls.map(\.id))
             p.openings = p.openings.filter { wallIds.contains($0.wallId) }
-            p.fixtures = p.fixtures.filter { $0.roomId.map(roomIds.contains) ?? false }
+            p.columns = p.columns.filter { c in p.rooms.contains { Geo.distanceToEdges(c.center, polygon: $0.floorPolygon) < 0.6 || Geo.pointInPolygon(c.center, $0.floorPolygon) } }
             p.annotations = []
             return p
         }

@@ -6,6 +6,7 @@ struct FloorPlanView: View {
     let highlightRoomId: String?
     var selectedOpeningId: String?
     var selectedWallId: String?
+    var selectedColumnId: String?
     var onTap: (PlanHit) -> Void = { _ in }
 
     private struct RenderKey: Equatable {
@@ -13,6 +14,7 @@ struct FloorPlanView: View {
         var highlight: String?
         var opening: String?
         var wall: String?
+        var column: String?
         var size: CGSize
     }
 
@@ -47,12 +49,13 @@ struct FloorPlanView: View {
                     .onEnded { zoom = min(max(zoom * $0, 1), 4) }
             )
             .task(id: RenderKey(plan: plan, highlight: highlightRoomId, opening: selectedOpeningId,
-                                wall: selectedWallId, size: geo.size)) {
+                                wall: selectedWallId, column: selectedColumnId, size: geo.size)) {
                 guard geo.size.width > 0, geo.size.height > 0 else { return }
                 // 按最大缩放倍数出图，放大后也清晰
                 image = FloorPlanRenderer.screenImage(plan, size: geo.size, scale: displayScale * 2,
                                                       highlightRoomId: highlightRoomId,
-                                                      selectedOpeningId: selectedOpeningId, selectedWallId: selectedWallId)
+                                                      selectedOpeningId: selectedOpeningId, selectedWallId: selectedWallId,
+                                                      selectedColumnId: selectedColumnId)
             }
         }
         .background(Color.white)

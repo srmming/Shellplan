@@ -28,15 +28,17 @@
 
 - **多房间扫描**：基于 Apple RoomPlan，扫完一个房间命名后接着扫下一个，最后自动拼成全屋
 - **自动拍照**：扫描时手机拿稳就自动拍，每张照片记录拍摄位置、朝向和拍到的墙
-- **白模**：只保留墙、地面和门窗洞口，墙上的门洞窗洞是真的挖空的；家具全部去掉
+- **白模**：只保留墙、柱、地面和门窗洞口，墙上的门洞窗洞是真的挖空的；家具和设施全部去掉
+- **墙体自动整理**：扫歪的墙拉直到房间的主方向，同一条直线上被拆碎的墙合并，几厘米的噪点墙去掉，墙角对齐；可以一键恢复到整理前
+- **柱子**：自动认出贴墙柱（墙上凸出的一块）和独立柱；RoomPlan 漏掉的柱子可以在平面图上点一下手动加，填卷尺量的宽和深
 - **尺寸**：墙长、层高、门窗宽高和离地高度自动标注；梁下等较矮的墙单独标出墙高
 - **门窗编辑**：标出平开门 / 推拉门 / 折叠门、平开窗 / 推拉窗 / 固定窗 / 上悬窗，门轴和开向，调整位置和尺寸，添加或删除门窗
 - **标注**：测距、备注、附照片；用卷尺量过的墙可以填「实测值」
-- **固定设施参考层**：马桶、洗手盆、灶台、洗衣机等位置（决定水电位）
 - **导出给 AI**：一个 zip 包，包含
-  - `whitebox.obj` / `whitebox.usda`：白模
+  - `whitebox.obj` / `whitebox.usda` / `whitebox.glb`：白模（GLB 可以直接拖进网页查看器和 AI 3D 工具）
+  - `ai_images/`：每个照片角度一组「现场照片 + 空房间白模图 + 深度图」，给 AI 生图锁住空间和透视
   - `floorplan.png` / `floorplan.pdf`：尺寸平面图（单位 mm）
-  - `scene.json`：房间、墙、门窗、设施、备注、照片位姿的结构化数据
+  - `scene.json`：房间、墙、门窗、柱子、备注、照片位姿的结构化数据
   - `build_whitebox.py`：Blender 脚本，按真实尺寸重建白模，并给每张照片还原一台同角度的相机
   - `AI_README.md`：给 AI 读的说明
 
@@ -70,9 +72,9 @@ open RoomScan.xcodeproj
 |---|---|
 | `RoomScan/Models/` | `FloorPlanData`：唯一的数据源，导出的 `scene.json` 就是它本身；项目存储；示例户型 |
 | `RoomScan/Scan/` | RoomPlan 多房间扫描流程，扫描中的手动 / 自动拍照 |
-| `RoomScan/Geometry/` | RoomPlan → FloorPlanData 的转换；白模几何（墙按门窗切块、外转角补角） |
+| `RoomScan/Geometry/` | RoomPlan → FloorPlanData 的转换；墙体整理和柱子识别（`WallCleanup`）；白模几何（墙按门窗切块、外转角补角） |
 | `RoomScan/Viewer/` | SceneKit 3D 查看：尺寸标签、点选、测距、备注、照片位置 |
-| `RoomScan/Export/` | 尺寸平面图（PNG / PDF）、OBJ、USDA、导出包打包 |
+| `RoomScan/Export/` | 尺寸平面图（PNG / PDF）、OBJ、USDA、GLB、AI 生图素材（白模图 + 深度图）、导出包打包 |
 | `RoomScan/Resources/` | `build_whitebox.py`（Blender 重建脚本）、`AI_README.md`（给 AI 的说明模板） |
 | `Design/` | 图标源文件（SVG）和生成脚本；`translations.py` 是界面翻译表 |
 | `docs/` | 项目网站（GitHub Pages）：介绍、隐私政策、技术支持 |
@@ -87,8 +89,8 @@ open RoomScan.xcodeproj
 
 1. Scan each room with Apple RoomPlan and name it; rooms are merged into one floor plan automatically.
 2. Photos are captured automatically while scanning, each with its camera pose and the wall it shows.
-3. View the empty whitebox model with wall lengths, ceiling heights, and door/window sizes. Add measurements, notes, photos, and tape-measured values.
-4. Export a zip with OBJ/USDA whitebox, dimensioned floor plan (PNG/PDF), `scene.json`, photos, and a Blender script that rebuilds the model and recreates every photo camera.
+3. View the empty whitebox model (walls, openings and columns only, no furniture) with wall lengths, ceiling heights, and door/window sizes. Crooked or fragmented walls are cleaned up automatically, columns are detected, and missed columns can be added by hand. Add measurements, notes, photos, and tape-measured values.
+4. Export a zip with OBJ/USDA/GLB whitebox, empty-room renders and depth maps at each photo angle (for AI image generation), dimensioned floor plan (PNG/PDF), `scene.json`, photos, and a Blender script that rebuilds the model and recreates every photo camera.
 
 Everything stays on the device. The app has no network features and collects no data. Available in English, Spanish, Japanese, Simplified and Traditional Chinese.
 

@@ -4,13 +4,15 @@ import simd
 
 struct ViewOptions: Equatable {
     var showCeiling = false
-    var showFixtures = false
     var showDimensions = true
     var selectedRoomId: String?
     var selectedWallId: String?
     var pendingPoint: Vec3?
     var includeAnnotations = true
     var showPhotos = false
+    var selectedColumnId: String?
+    /// 3D 查看时天花板半透明，渲染 AI 素材时用不透明
+    var ceilingOpacity: CGFloat = 0.55
 }
 
 extension Vec3 {
@@ -56,20 +58,22 @@ enum SceneBuilder {
 
         if options.showCeiling {
             for slab in wb.ceilings {
-                let node = slabNode(slab, material: material(UIColor(white: 0.95, alpha: 1), transparency: 0.55), depth: 0.02)
+                let node = slabNode(slab, material: material(UIColor(white: 0.95, alpha: 1), transparency: options.ceilingOpacity), depth: 0.02)
                 node.name = "ceiling:\(slab.roomId)"
                 root.addChildNode(node)
             }
         }
 
-        if options.showFixtures {
-            let mat = material(UIColor.systemTeal.withAlphaComponent(0.6), transparency: 0.7)
-            for (box, fixture) in zip(wb.fixtures, plan.fixtures) {
-                let node = boxNode(box, material: mat)
-                node.name = "fixture:\(fixture.id)"
-                root.addChildNode(node)
-                root.addChildNode(label(fixture.name, at: fixture.center + Vec3(0, 0, fixture.size.z / 2 + 0.12),
-                                        color: .systemTeal, fontSize: 10))
+        let selColumn = material(selectedColor.withAlphaComponent(0.9))
+        for box in wb.columns {
+            let node = boxNode(box, material: box.ownerId == options.selectedColumnId ? selColumn : wallMat)
+            node.name = "column:\(box.ownerId)"
+            root.addChildNode(node)
+        }
+        if options.showDimensions {
+            for c in plan.columns where options.selectedRoomId == nil || plan.rooms.first(where: { $0.id == options.selectedRoomId }).map({ Geo.pointInPolygon(c.center, $0.floorPolygon) || Geo.distanceToEdges(c.center, polygon: $0.floorPolygon) < 0.5 }) == true {
+                root.addChildNode(label(L10n.column(c), at: Vec3(c.center.x, c.center.y, c.height + 0.15),
+                                        color: c.id == options.selectedColumnId ? selectedColor : .systemIndigo, fontSize: 11))
             }
         }
 

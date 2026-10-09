@@ -56,8 +56,8 @@ enum USDAExporter {
                  faces: Geo.triangulate(slab.polygon).map { $0.reversed() }, color: (0.98, 0.98, 0.98), indent: "        ")
         }.joined())
 
-        out += scope("Fixtures_Ref", wb.fixtures.map {
-            mesh($0.name, points: $0.corners(), faces: boxFaces, color: (0.4, 0.7, 0.75), indent: "        ")
+        out += scope("Columns", wb.columns.map {
+            mesh($0.name, points: $0.corners(), faces: boxFaces, color: (0.95, 0.95, 0.95), indent: "        ")
         }.joined())
 
         out += "}\n"

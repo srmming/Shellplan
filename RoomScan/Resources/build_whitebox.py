@@ -12,7 +12,7 @@
   Floors           每个房间的地面
   Ceilings         天花板（默认隐藏）
   Openings_Ref     门窗洞口的线框参考体（不渲染），自定义属性里有类型和尺寸
-  Fixtures_Ref     马桶、灶台等固定设施的参考方块（默认隐藏，不渲染），代表水电位
+  Columns          柱子：手动标的柱子生成方柱；自动识别的贴墙柱已经包含在墙体里，只放一个带尺寸属性的标记
   Annotations      用户备注和测距（Empty 对象，自定义属性里有文字和照片路径）
   Photo_Cameras    每张现场照片对应一台相机（位置、朝向、视角和拍照时一致，照片设为相机背景）。
                    在视口里切到某台相机视角（小键盘 0），就能把白模和真实照片叠在一起对照
@@ -206,7 +206,7 @@ def build(scene_path):
     floors_col = get_collection("Floors")
     ceilings_col = get_collection("Ceilings", hide_viewport=True, hide_render=True)
     openings_col = get_collection("Openings_Ref", hide_render=True)
-    fixtures_col = get_collection("Fixtures_Ref", hide_viewport=True, hide_render=True)
+    columns_col = get_collection("Columns")
     notes_col = get_collection("Annotations", hide_render=True)
 
     wall_mat = get_material("Whitebox_Wall", (0.95, 0.95, 0.95, 1))
@@ -270,11 +270,24 @@ def build(scene_path):
             if o.get("opensOutward") is not None:
                 obj["opens_outward"] = bool(o["opensOutward"])
 
-    for fx in data.get("fixtures", []):
-        c, s = fx["center"], fx["size"]
-        obj = make_box(f"Ref_{fx['category']}_{fx['id']}", (c["x"], c["y"], c["z"]),
-                       (s["x"], s["y"], s["z"]), fx["yaw"], fixtures_col, ref_mat)
-        obj["name_zh"] = fx["name"]
+    for col in data.get("columns", []):
+        c = col["center"]
+        if col.get("wallIds"):
+            # 已经由墙体组成，只放一个标记
+            obj = bpy.data.objects.new(f"Column_{col['id']}", None)
+            obj.empty_display_type = "CUBE"
+            obj.empty_display_size = 0.5
+            obj.location = (c["x"], c["y"], col["height"] / 2)
+            obj.scale = (col["width"], col["depth"], col["height"])
+            obj.rotation_euler = (0, 0, col["yaw"])
+            columns_col.objects.link(obj)
+        else:
+            obj = make_box(f"Column_{col['id']}", (c["x"], c["y"], col["height"] / 2),
+                           (col["width"], col["depth"], col["height"]), col["yaw"], columns_col, wall_mat)
+        obj["kind"] = col["kind"]
+        obj["width_mm"] = round(col["width"] * 1000)
+        obj["depth_mm"] = round(col["depth"] * 1000)
+        obj["source"] = col.get("source", "")
 
     for a in data.get("annotations", []):
         p = a["position"]

@@ -7,11 +7,13 @@ Scanned {{DATE}} · {{ROOM_COUNT}} room(s) · about {{TOTAL_AREA}} m² in total.
 
 | File | Purpose |
 |---|---|
-| `scene.json` | **The authoritative structured data**: rooms, walls, openings, fixtures, notes. Units: meters |
+| `scene.json` | **The authoritative structured data**: rooms, walls, openings, columns, notes. Units: meters |
 | `build_whitebox.py` | Blender script that rebuilds the whitebox at true scale from `scene.json` (recommended) |
 | `whitebox.obj` / `.mtl` | The same whitebox as OBJ; imports directly into Blender |
 | `whitebox.usda` | The same whitebox as USD (Z up, meters); imports directly into Blender |
-| `roomplan_original.usdz` | Apple RoomPlan's original parametric model with furniture, for reference only |
+| `whitebox.glb` | The same whitebox as glTF (common for web viewers and AI 3D tools) |
+| `ai_images/` | Assets for AI image generation: for each viewpoint `*_photo.jpg` (site photo), `*_whitebox.png` (empty-room render from the same position and angle) and `*_depth.png` (depth map, near = white). Use the whitebox or depth image as a structural reference for image generators |
+| `roomplan_original.usdz` | Apple RoomPlan's original model (with the furniture it detected, which may be wrong), for reference only |
 | `floorplan.png` / `.pdf` | Top-down dimensioned floor plan in millimeters |
 | `photos/` | On-site photos. Files starting with `AUTO_` were taken automatically while scanning; others were taken manually. Positions and directions are in `sitePhotos` in `scene.json` |
 
@@ -31,7 +33,10 @@ Scanned {{DATE}} · {{ROOM_COUNT}} room(s) · about {{TOTAL_AREA}} m² in total.
   - `style`: the type set by the user. Doors: `swingDoor`, `slidingDoor`, `foldingDoor`; windows: `casementWindow`, `slidingWindow`, `fixedWindow`, `awningWindow`. Missing means the user hasn't confirmed it
   - `hinge`: which side the hinges are on (`left` / `right`), as seen standing in the room facing the wall (i.e. looking toward `outward`)
   - `opensOutward`: whether a swing door opens away from the room; `false` or missing means it opens into the room
-- `fixtures[]`: positions of toilets, sinks, stoves, washers, etc. They determine **drains, ventilation and electrical points** — do not move them casually
+- `columns[]`: columns. `kind` is `pilaster` (attached to a wall) or `freestanding`; `center` / `width` / `depth` / `yaw` / `height` give position and size.
+  When `wallIds` is not empty the column is already formed by those walls; when empty it was added by the user and needs its own box.
+  Columns cannot be removed in the design
+- This model contains **only walls, openings and columns**; existing furniture and fixtures were removed. See `photos/` for the site as it is
 - `annotations[]`: user notes (`note`) and measurements (`measurement`); `photos` are photo paths
 - `sitePhotos[]`: on-site photos (taken automatically while scanning, `isAuto: true`, or manually). Each has the camera's `cameraPosition`, `cameraDirection`, `cameraUp`, `verticalFov` (vertical field of view of the portrait image, degrees), and the `roomId` and `wallId` it shows.
   To see what a wall or room actually looks like (wall color, flooring, pipes, switches and outlets), check the matching photos.
@@ -55,10 +60,11 @@ Scanned {{DATE}} · {{ROOM_COUNT}} room(s) · about {{TOTAL_AREA}} m² in total.
    or import `whitebox.obj` directly
 2. Read the notes above and look through `photos/` to understand the user's needs and the site
 3. Design the interior in the whitebox (walls, floors, ceilings, cabinetry, furniture). **Do not move walls or door and window openings**
-4. Plan bathrooms and kitchens around the positions in `fixtures`
+4. Columns and beams cannot be removed; check the site photos for bathroom and kitchen drain and vent positions
 
 ## Known limitations
 
 - LiDAR wall lengths are usually accurate to within a few centimeters; glass, mirrors and clutter increase the error
 - Wall thickness is a default value (120 mm), not a measurement
+- Walls were cleaned up automatically (straightened to the main axes, corners joined); columns are detected from wall shapes and may be missed or misidentified
 - Walls with `isCurved: true` are curved walls approximated as straight lines

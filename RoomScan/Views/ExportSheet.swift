@@ -14,7 +14,8 @@ struct ExportSheet: View {
         NavigationStack {
             List {
                 Section {
-                    item("cube", "白模 OBJ / USDA", "墙体已挖好门窗洞，Blender 可直接导入")
+                    item("cube", "白模 OBJ / USDA / GLB", "只有墙、门窗和柱子，Blender 和 AI 3D 工具可直接导入")
+                    item("photo.stack", "AI 生图素材", "每个照片角度一组：现场照片、空房间白模图、深度图")
                     item("doc.richtext", "尺寸平面图 PNG / PDF", "单位 mm，含房间名、面积、门窗尺寸")
                     item("curlybraces", "scene.json 结构数据", "\(project.plan.rooms.count) 个房间 · \(project.plan.walls.count) 面墙 · \(project.plan.openings.count) 个门窗")
                     item("photo.on.rectangle", "照片 \(project.photoCount) 张", "带拍摄位置，对应到备注")

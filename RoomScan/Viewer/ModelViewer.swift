@@ -5,6 +5,7 @@ enum ViewerHit {
     case wall(id: String, point: Vec3)
     case annotation(id: String)
     case photo(id: String)
+    case column(id: String, point: Vec3)
     case surface(point: Vec3)
     case nothing
 }
@@ -128,6 +129,7 @@ struct ModelViewer: UIViewRepresentable {
                     case "wall": onTap(.wall(id: id, point: point))
                     case "ann": onTap(.annotation(id: id))
                     case "photo": onTap(.photo(id: id))
+                    case "column": onTap(.column(id: id, point: point))
                     default: onTap(.surface(point: point))
                     }
                     return

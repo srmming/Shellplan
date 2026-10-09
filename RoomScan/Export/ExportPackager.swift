@@ -20,11 +20,13 @@ enum ExportPackager {
 
         var plan = project.plan
         plan.meta.projectName = project.name
+        plan.fixtures = []
         let wb = WhiteboxBuilder.build(plan)
 
         let (obj, mtl) = OBJExporter.export(plan, whitebox: wb)
         try obj.write(to: dir.appendingPathComponent("whitebox.obj"), atomically: true, encoding: .utf8)
         try mtl.write(to: dir.appendingPathComponent("whitebox.mtl"), atomically: true, encoding: .utf8)
+        try GLBExporter.export(plan, whitebox: wb).write(to: dir.appendingPathComponent("whitebox.glb"))
         try USDAExporter.export(plan, whitebox: wb).write(to: dir.appendingPathComponent("whitebox.usda"), atomically: true, encoding: .utf8)
         try JSONCoding.encoder.encode(plan).write(to: dir.appendingPathComponent("scene.json"))
         try FloorPlanRenderer.image(plan, width: 3000).pngData()?.write(to: dir.appendingPathComponent("floorplan.png"))
@@ -36,6 +38,22 @@ enum ExportPackager {
             if fm.fileExists(atPath: src.path), !fm.fileExists(atPath: dst.path) {
                 try? fm.copyItem(at: src, to: dst)
             }
+        }
+
+        // AI 生图素材：每个视角一组「现场照片 / 空房间白模图 / 深度图」
+        let aiDir = dir.appendingPathComponent("ai_images", isDirectory: true)
+        try fm.createDirectory(at: aiDir, withIntermediateDirectories: true)
+        for shot in AIImageRenderer.shots(for: plan) {
+            if let photo = shot.photo {
+                let src = projectDir.appendingPathComponent(photo)
+                if fm.fileExists(atPath: src.path) {
+                    try? fm.copyItem(at: src, to: aiDir.appendingPathComponent("\(shot.id)_photo.jpg"))
+                }
+            }
+            try AIImageRenderer.render(plan, shot: shot, depth: false)?.pngData()?
+                .write(to: aiDir.appendingPathComponent("\(shot.id)_whitebox.png"))
+            try AIImageRenderer.render(plan, shot: shot, depth: true)?.pngData()?
+                .write(to: aiDir.appendingPathComponent("\(shot.id)_depth.png"))
         }
 
         let original = projectDir.appendingPathComponent("roomplan_original.usdz")

@@ -35,7 +35,7 @@ enum OBJExporter {
         for box in wb.walls { writeBox(box, material: "Wall") }
         for slab in wb.floors { writeSlab(slab, material: "Floor", facingUp: true) }
         for slab in wb.ceilings { writeSlab(slab, material: "Ceiling", facingUp: false) }
-        for box in wb.fixtures { writeBox(box, material: "Reference") }
+        for box in wb.columns { writeBox(box, material: "Wall") }
 
         let mtl = """
         # Shellplan 白模材质
@@ -45,10 +45,7 @@ enum OBJExporter {
         Kd 0.80 0.80 0.80
         newmtl Ceiling
         Kd 0.98 0.98 0.98
-        newmtl Reference
-        Kd 0.40 0.70 0.75
-        d 0.6
-
+        
         """
         return (out, mtl)
     }

@@ -34,6 +34,9 @@ struct PlanLayout {
 
 /// 在平面图上点到了什么
 enum PlanHit {
+    case column(String)
+    /// 点在空地上（没点到柱子、门窗、墙）
+    case floor(Vec2)
     case opening(String)
     case wall(String, Vec2)
     case nothing
@@ -54,13 +57,13 @@ enum FloorPlanRenderer {
 
     /// App 里看的平面图：按视图尺寸出图，铺满屏幕
     static func screenImage(_ plan: FloorPlanData, size: CGSize, scale: CGFloat, highlightRoomId: String?,
-                            selectedOpeningId: String?, selectedWallId: String?) -> UIImage {
+                            selectedOpeningId: String?, selectedWallId: String?, selectedColumnId: String? = nil) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = scale
         format.opaque = true
         return UIGraphicsImageRenderer(size: size, format: format).image { ctx in
             draw(plan, in: ctx.cgContext, layout: screenLayout(plan, size: size), highlightRoomId: highlightRoomId,
-                 selectedOpeningId: selectedOpeningId, selectedWallId: selectedWallId)
+                 selectedOpeningId: selectedOpeningId, selectedWallId: selectedWallId, selectedColumnId: selectedColumnId)
         }
     }
 
@@ -68,10 +71,20 @@ enum FloorPlanRenderer {
         PlanLayout(plan: plan, rect: CGRect(origin: .zero, size: size), compact: true)
     }
 
-    /// 点击命中：先找门窗，再找墙
+    /// 柱子的四个角（平面坐标）
+    static func corners(of c: FloorPlanData.Column, grow: Double = 0) -> [Vec2] {
+        let u = Vec2(cos(c.yaw), sin(c.yaw)), v = u.perpendicular
+        let hw = c.width / 2 + grow, hd = c.depth / 2 + grow
+        return [c.center - u * hw - v * hd, c.center + u * hw - v * hd, c.center + u * hw + v * hd, c.center - u * hw + v * hd]
+    }
+
+    /// 点击命中：先找柱子，再找门窗，最后找墙
     static func hitTest(_ plan: FloorPlanData, layout: PlanLayout, at point: CGPoint) -> PlanHit {
         let p = layout.planPoint(point)
         let tolerance = max(24 / layout.s, 0.12)
+        if let c = plan.columns.first(where: { Geo.pointInPolygon(p, corners(of: $0, grow: tolerance / 2)) }) {
+            return .column(c.id)
+        }
         var best: (Double, PlanHit) = (.infinity, .nothing)
         for o in plan.openings {
             guard let (a, b) = plan.segment(of: o), let w = plan.wall(o.wallId) else { continue }
@@ -88,6 +101,7 @@ enum FloorPlanRenderer {
                 best = (d, .wall(w.id, w.start + w.direction * t))
             }
         }
+        if case .nothing = best.1 { return .floor(p) }
         return best.1
     }
 
@@ -108,7 +122,7 @@ enum FloorPlanRenderer {
     }
 
     static func draw(_ plan: FloorPlanData, in ctx: CGContext, layout: PlanLayout, highlightRoomId: String?,
-                     selectedOpeningId: String? = nil, selectedWallId: String? = nil) {
+                     selectedOpeningId: String? = nil, selectedWallId: String? = nil, selectedColumnId: String? = nil) {
         let rect = layout.rect
         UIColor.white.setFill()
         ctx.fill(rect)
@@ -139,26 +153,6 @@ enum FloorPlanRenderer {
             ctx.fillPath()
         }
 
-        // 固定设施（虚线框）
-        ctx.saveGState()
-        ctx.setLineDash(phase: 0, lengths: [4 * k, 3 * k])
-        for f in plan.fixtures {
-            let c = cos(f.yaw), sn = sin(f.yaw)
-            let corners = [(-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)].map { dx, dy -> CGPoint in
-                let lx = dx * f.size.x, ly = dy * f.size.y
-                return pt(Vec2(f.center.x + lx * c - ly * sn, f.center.y + lx * sn + ly * c))
-            }
-            let path = CGMutablePath()
-            path.addLines(between: corners)
-            path.closeSubpath()
-            ctx.addPath(path)
-            ctx.setStrokeColor(UIColor.systemTeal.cgColor)
-            ctx.setLineWidth(1.2 * k)
-            ctx.strokePath()
-            text(f.name, at: pt(f.center.xy), font: .systemFont(ofSize: 9 * k), color: .systemTeal, ctx: ctx)
-        }
-        ctx.restoreGState()
-
         // 墙
         let wallColor = UIColor(white: 0.15, alpha: 1).cgColor
         for w in plan.walls {
@@ -169,6 +163,48 @@ enum FloorPlanRenderer {
             ctx.move(to: pt(w.start + off))
             ctx.addLine(to: pt(w.end + off))
             ctx.strokePath()
+        }
+
+        // 柱子：深色实心（手动加的），或在墙围成的轮廓上画斜线（自动识别的）
+        for c in plan.columns {
+            let selected = c.id == selectedColumnId
+            let pts = corners(of: c).map(pt)
+            let path = CGMutablePath()
+            path.addLines(between: pts)
+            path.closeSubpath()
+            ctx.saveGState()
+            ctx.addPath(path)
+            if c.wallIds.isEmpty {
+                ctx.setFillColor((selected ? selectColor : UIColor(white: 0.15, alpha: 1)).cgColor)
+                ctx.fillPath()
+            } else {
+                ctx.clip()
+                ctx.setStrokeColor((selected ? selectColor : UIColor(white: 0.35, alpha: 1)).cgColor)
+                ctx.setLineWidth(1 * k)
+                let box = path.boundingBox
+                var x = box.minX - box.height
+                while x < box.maxX {
+                    ctx.move(to: CGPoint(x: x, y: box.maxY))
+                    ctx.addLine(to: CGPoint(x: x + box.height, y: box.minY))
+                    x += 5 * k
+                }
+                ctx.strokePath()
+            }
+            ctx.restoreGState()
+            if selected {
+                ctx.addPath(path)
+                ctx.setStrokeColor(selectColor.cgColor)
+                ctx.setLineWidth(2 * k)
+                ctx.strokePath()
+            }
+            let centroid = pt(c.center)
+            let inward = plan.rooms.first.map { pt(Geo.centroid($0.floorPolygon)) } ?? centroid
+            let dir = CGVector(dx: inward.x - centroid.x, dy: inward.y - centroid.y)
+            let len = max(hypot(dir.dx, dir.dy), 1)
+            let off = (max(c.width, c.depth) * s / 2) + 12 * k
+            text(L10n.column(c), at: CGPoint(x: centroid.x + dir.dx / len * off, y: centroid.y + dir.dy / len * off),
+                 font: .systemFont(ofSize: 9 * k, weight: selected ? .bold : .medium),
+                 color: selected ? selectColor : UIColor.systemIndigo, background: UIColor.white.withAlphaComponent(0.85), ctx: ctx)
         }
 
         // 门窗：按样式画

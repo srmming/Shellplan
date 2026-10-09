@@ -42,11 +42,10 @@ enum SampleData {
             FloorPlanData.Opening(id: "WIN3", kind: .window, wallId: "W09", centerOffset: 0.9, width: 0.6, height: 0.6, sillHeight: 1.5, isOpen: nil),
         ]
 
-        let fixtures = [
-            FloorPlanData.Fixture(id: "F1", category: "toilet", name: FixtureName.toilet, roomId: "R3",
-                                  center: Vec3(0.45, 5.2, 0.38), size: Vec3(0.4, 0.7, 0.76), yaw: -.pi / 2),
-            FloorPlanData.Fixture(id: "F2", category: "sink", name: FixtureName.sink, roomId: "R3",
-                                  center: Vec3(1.5, 4.3, 0.43), size: Vec3(0.6, 0.45, 0.85), yaw: .pi / 2),
+        // 客厅东墙上一根手动标的贴墙柱
+        let columns = [
+            FloorPlanData.Column(id: "C1", kind: .pilaster, center: Vec2(3.98, 0.9), width: 0.4, depth: 0.44,
+                                 yaw: .pi / 2, height: 2.7, wallIds: [], source: "manual"),
         ]
 
         let annotations = [
@@ -58,7 +57,8 @@ enum SampleData {
         var meta = FloorPlanData.Meta.make(projectName: String(localized: "示例户型"))
         meta.createdAt = Date(timeIntervalSince1970: 1_760_000_000)
         var plan = FloorPlanData(schemaVersion: 1, meta: meta, rooms: rooms, walls: walls, openings: openings,
-                                 fixtures: fixtures, annotations: annotations)
+                                 fixtures: [], annotations: annotations)
+        plan.columns = columns
         plan.recomputeDerived()
         return plan
     }

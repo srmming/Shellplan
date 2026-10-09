@@ -145,21 +145,6 @@ enum RoomPlanAdapter {
         addOpenings(windows, kind: .window, prefix: "WIN")
         addOpenings(openings, kind: .opening, prefix: "O")
 
-        // 固定设施
-        var fixtures: [FloorPlanData.Fixture] = []
-        for o in objects {
-            guard let info = fixtureInfo(o.category) else { continue }
-            let center = conv(position(o.transform))
-            let ax = o.transform.columns.0
-            fixtures.append(FloorPlanData.Fixture(
-                id: "F\(fixtures.count + 1)", category: info.key, name: info.name,
-                roomId: planRooms.first { Geo.pointInPolygon(center.xy, $0.floorPolygon) }?.id,
-                center: center,
-                size: Vec3(Double(o.dimensions.x), Double(o.dimensions.z), Double(o.dimensions.y)),
-                yaw: atan2(Double(-ax.z), Double(ax.x))
-            ))
-        }
-
         // 照片：全部进 sitePhotos（带相机位姿）；手动拍的另外生成一条备注图钉
         // ARKit 相机看向 -Z；竖拍时画面的「上」是相机的 -X
         func dirVec(_ v: simd_float4) -> Vec3 { Vec3(Double(v.x), Double(-v.z), Double(v.y)) }
@@ -195,10 +180,12 @@ enum RoomPlanAdapter {
             }
         }
 
+        // 家具和设施一律不要（识别容易出错，也不是白模需要的），只留墙、门窗和柱子
         var plan = FloorPlanData(schemaVersion: 1, meta: .make(projectName: projectName), rooms: planRooms,
-                                 walls: planWalls, openings: planOpenings, fixtures: fixtures, annotations: annotations,
+                                 walls: planWalls, openings: planOpenings, fixtures: [], annotations: annotations,
                                  sitePhotos: sitePhotos)
         plan.recomputeDerived()
+        WallCleanup.run(&plan)
         return plan
     }
 

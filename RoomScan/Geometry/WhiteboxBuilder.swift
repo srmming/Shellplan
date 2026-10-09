@@ -34,7 +34,8 @@ struct Whitebox {
     var walls: [WhiteboxBox]
     var floors: [WhiteboxSlab]
     var ceilings: [WhiteboxSlab]
-    var fixtures: [WhiteboxBox]
+    /// 手动添加的柱子（自动识别的贴墙柱 / 独立柱已经由墙表示）
+    var columns: [WhiteboxBox]
 }
 
 /// FloorPlanData → 带真实门窗洞口的白模几何。3D 查看、OBJ 导出共用这一份结果；
@@ -123,9 +124,10 @@ enum WhiteboxBuilder {
         let ceilings = plan.rooms.filter { $0.floorPolygon.count >= 3 }.map {
             WhiteboxSlab(name: "Ceiling_\($0.id)", roomId: $0.id, polygon: $0.floorPolygon, z: $0.height)
         }
-        let fixtures = plan.fixtures.map {
-            WhiteboxBox(name: "Ref_\($0.category)_\($0.id)", ownerId: $0.id, center: $0.center, size: $0.size, yaw: $0.yaw)
+        let columns = plan.columns.filter { $0.wallIds.isEmpty }.map {
+            WhiteboxBox(name: "Column_\($0.id)", ownerId: $0.id, center: Vec3($0.center.x, $0.center.y, $0.height / 2),
+                        size: Vec3($0.width, $0.depth, $0.height), yaw: $0.yaw)
         }
-        return Whitebox(walls: walls, floors: floors, ceilings: ceilings, fixtures: fixtures)
+        return Whitebox(walls: walls, floors: floors, ceilings: ceilings, columns: columns)
     }
 }

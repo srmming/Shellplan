@@ -28,6 +28,11 @@ enum L10n {
         o.style.map(style) ?? opening(o.kind)
     }
 
+    /// 柱子的显示名，例如「柱 400×400」
+    static func column(_ c: FloorPlanData.Column) -> String {
+        String(localized: "柱 \(Fmt.mm(c.width))×\(Fmt.mm(c.depth))")
+    }
+
     /// 当前界面语言是不是中文（简体或繁体）
     static var isChinese: Bool {
         (Bundle.main.preferredLocalizations.first ?? "zh-Hans").hasPrefix("zh")

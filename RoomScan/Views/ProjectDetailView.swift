@@ -18,7 +18,6 @@ struct ProjectDetailView: View {
     @State private var mode: Mode = .model
     @State private var tool: Tool = .inspect
     @State private var showCeiling = false
-    @State private var showFixtures = false
     @State private var showDimensions = true
     @State private var showPhotos = false
     @State private var showGallery = false
@@ -28,6 +27,10 @@ struct ProjectDetailView: View {
     /// 点墙时点到的位置，添加门窗时用来定初始位置
     @State private var selectedWallPoint: Vec2?
     @State private var editingOpening: FloorPlanData.Opening?
+    @State private var editingColumn: FloorPlanData.Column?
+    @State private var addingColumn = false
+    @State private var cleanupMessage: String?
+    @State private var confirmRestore = false
     @State private var measureStart: Vec3?
     @State private var editingAnnotation: FloorPlanData.Annotation?
     @State private var showExport = false
@@ -50,9 +53,9 @@ struct ProjectDetailView: View {
     private var plan: FloorPlanData { project.plan }
 
     private var viewOptions: ViewOptions {
-        ViewOptions(showCeiling: showCeiling, showFixtures: showFixtures, showDimensions: showDimensions,
+        ViewOptions(showCeiling: showCeiling, showDimensions: showDimensions,
                     selectedRoomId: selectedRoomId, selectedWallId: selectedWallId, pendingPoint: measureStart,
-                    showPhotos: showPhotos)
+                    showPhotos: showPhotos, selectedColumnId: editingColumn?.id)
     }
 
     var body: some View {
@@ -72,7 +75,7 @@ struct ProjectDetailView: View {
                     ModelViewer(plan: plan, options: viewOptions, onTap: handleHit)
                 case .plan:
                     FloorPlanView(plan: plan, highlightRoomId: selectedRoomId, selectedOpeningId: editingOpening?.id,
-                                  selectedWallId: selectedWallId, onTap: handlePlanHit)
+                                  selectedWallId: selectedWallId, selectedColumnId: editingColumn?.id, onTap: handlePlanHit)
                 }
                 VStack(spacing: 8) {
                     if let hint { hintBubble(hint) }
@@ -81,7 +84,7 @@ struct ProjectDetailView: View {
                 .padding()
             }
 
-            if mode == .model { toolBar }
+            if mode == .model { toolBar } else { planBar }
         }
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
@@ -93,6 +96,10 @@ struct ProjectDetailView: View {
                         showRenameProject = true
                     }
                     Button("现场照片（\(plan.sitePhotos.count)）", systemImage: "photo.on.rectangle") { showGallery = true }
+                    Button("自动整理墙体", systemImage: "wand.and.stars") { cleanupWalls() }
+                    if hasCleanupBackup {
+                        Button("恢复整理前的墙体", systemImage: "arrow.uturn.backward") { confirmRestore = true }
+                    }
                     Button("导出给 AI", systemImage: "square.and.arrow.up") { showExport = true }
                 } label: {
                     Image(systemName: "square.and.arrow.up")
@@ -120,6 +127,21 @@ struct ProjectDetailView: View {
         .sheet(item: $editingOpening) { o in
             OpeningEditor(plan: plan, opening: o, isNew: plan.opening(o.id) == nil,
                           onSave: saveOpening, onDelete: { deleteOpening(o.id) })
+        }
+        .sheet(item: $editingColumn) { c in
+            ColumnEditor(column: c, isNew: !plan.columns.contains { $0.id == c.id },
+                         onSave: saveColumn, onDelete: { deleteColumn(c.id) })
+        }
+        .alert("墙体整理好了", isPresented: Binding(get: { cleanupMessage != nil }, set: { if !$0 { cleanupMessage = nil } })) {
+            Button("好") {}
+        } message: {
+            Text(cleanupMessage ?? "")
+        }
+        .confirmationDialog("恢复到第一次整理之前？", isPresented: $confirmRestore, titleVisibility: .visible) {
+            Button("恢复", role: .destructive) { restoreWalls() }
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("整理之后改过的门窗、柱子和备注也会一起还原。")
         }
         .sheet(isPresented: $showExport) {
             ExportSheet(project: project)
@@ -209,10 +231,25 @@ struct ProjectDetailView: View {
             Menu {
                 Toggle("尺寸标签", isOn: $showDimensions)
                 Toggle("天花板", isOn: $showCeiling)
-                Toggle("固定设施（水电位参考）", isOn: $showFixtures)
                 Toggle("现场照片位置（\(plan.sitePhotos.count)）", isOn: $showPhotos)
             } label: {
                 toolLabel("图层", "square.3.layers.3d", active: false)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .background(.bar)
+    }
+
+    /// 平面图底部：加柱子
+    private var planBar: some View {
+        HStack {
+            Button {
+                addingColumn.toggle()
+                selectedWallId = nil
+            } label: {
+                toolLabel("加柱子", "square.dashed.inset.filled", active: addingColumn)
             }
             .frame(maxWidth: .infinity)
         }
@@ -236,7 +273,8 @@ struct ProjectDetailView: View {
 
     private var hint: String? {
         if mode == .plan {
-            return selectedWallId == nil ? String(localized: "点门窗修改样式和位置；点墙可以添加门窗") : nil
+            if addingColumn { return String(localized: "点一下放一根柱子，点在墙边会自动贴墙") }
+            return selectedWallId == nil ? String(localized: "点门窗、柱子可以修改；点墙可以添加门窗") : nil
         }
         switch tool {
         case .inspect: return selectedWallId == nil ? String(localized: "点墙查看尺寸、填实测值；点蓝色图钉看备注。单位 mm") : nil
@@ -278,6 +316,11 @@ struct ProjectDetailView: View {
                 .font(.subheadline)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
+                    ForEach(plan.columns.filter { $0.wallIds.contains(wall.id) }) { c in
+                        Button(L10n.column(c), systemImage: "square.dashed.inset.filled") { editingColumn = c }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
                     ForEach(openings) { o in
                         Button("\(L10n.title(o)) \(Fmt.mm(o.width))×\(Fmt.mm(o.height))") { editingOpening = o }
                             .buttonStyle(.bordered)
@@ -318,6 +361,10 @@ struct ProjectDetailView: View {
             viewingPhoto = plan.sitePhotos.first { $0.id == id }
             return
         }
+        if case .column(let id, _) = hit {
+            editingColumn = plan.columns.first { $0.id == id }
+            return
+        }
         switch tool {
         case .inspect:
             if case .wall(let id, let p) = hit {
@@ -349,7 +396,21 @@ struct ProjectDetailView: View {
     }
 
     private func handlePlanHit(_ hit: PlanHit) {
+        if addingColumn {
+            switch hit {
+            case .floor(let p), .wall(_, let p):
+                editingColumn = newColumn(at: p)
+                addingColumn = false
+                return
+            default:
+                break
+            }
+        }
         switch hit {
+        case .column(let id):
+            editingColumn = plan.columns.first { $0.id == id }
+        case .floor:
+            selectedWallId = nil
         case .opening(let id):
             editingOpening = plan.opening(id)
         case .wall(let id, let p):
@@ -371,6 +432,63 @@ struct ProjectDetailView: View {
             centerOffset: center, width: min(width, wall.length),
             height: kind == .door ? min(2.1, wall.height) : 1.2, sillHeight: kind == .door ? 0 : 0.9,
             isOpen: nil, style: kind == .door ? .swingDoor : .slidingWindow)
+    }
+
+    /// 新柱子：离墙 60cm 以内就贴到墙的室内一侧，方向和墙一致；否则是独立柱，方向和整个空间的主方向一致
+    private func newColumn(at p: Vec2) -> FloorPlanData.Column {
+        let size = 0.4
+        let height = plan.rooms.first { Geo.pointInPolygon(p, $0.floorPolygon) }?.height ?? plan.maxHeight
+        let id = "C\(UUID().uuidString.prefix(4))"
+        if let wall = plan.walls.min(by: { Geo.distance(p, segment: $0.start, $0.end) < Geo.distance(p, segment: $1.start, $1.end) }),
+           Geo.distance(p, segment: wall.start, wall.end) < 0.6 {
+            let t = min(max((p - wall.start).dot(wall.direction), size / 2), max(wall.length - size / 2, size / 2))
+            let foot = wall.start + wall.direction * t
+            let center = foot - wall.outward * (size / 2)
+            return FloorPlanData.Column(id: id, kind: .pilaster, center: center, width: size, depth: size,
+                                        yaw: atan2(wall.direction.y, wall.direction.x), height: height, wallIds: [], source: "manual")
+        }
+        return FloorPlanData.Column(id: id, kind: .freestanding, center: p, width: size, depth: size,
+                                    yaw: WallCleanup.dominantAngle(plan.walls), height: height, wallIds: [], source: "manual")
+    }
+
+    private func saveColumn(_ c: FloorPlanData.Column) {
+        if let i = project.plan.columns.firstIndex(where: { $0.id == c.id }) {
+            project.plan.columns[i] = c
+        } else {
+            project.plan.columns.append(c)
+        }
+        persist()
+    }
+
+    private func deleteColumn(_ id: String) {
+        project.plan.columns.removeAll { $0.id == id }
+        persist()
+    }
+
+    // MARK: - 墙体整理
+
+    private var cleanupBackupURL: URL {
+        store.directory(for: project.id).appendingPathComponent("plan_before_cleanup.json")
+    }
+
+    private var hasCleanupBackup: Bool { FileManager.default.fileExists(atPath: cleanupBackupURL.path) }
+
+    private func cleanupWalls() {
+        // 只备份第一次整理之前的样子
+        if !hasCleanupBackup, let data = try? JSONCoding.encoder.encode(project.plan) {
+            try? data.write(to: cleanupBackupURL, options: .atomic)
+        }
+        let r = WallCleanup.run(&project.plan)
+        persist()
+        cleanupMessage = String(localized: "拉直 \(r.snapped) 段墙，合并 \(r.merged) 段，去掉 \(r.removed) 段噪点，认出 \(r.pilasters + r.freestanding) 根柱子。")
+    }
+
+    private func restoreWalls() {
+        guard let data = try? Data(contentsOf: cleanupBackupURL),
+              let original = try? JSONCoding.decoder.decode(FloorPlanData.self, from: data) else { return }
+        project.plan = original
+        try? FileManager.default.removeItem(at: cleanupBackupURL)
+        persist()
     }
 
     private func saveOpening(_ o: FloorPlanData.Opening) {

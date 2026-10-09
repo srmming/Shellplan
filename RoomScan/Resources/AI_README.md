@@ -7,11 +7,13 @@
 
 | 文件 | 用途 |
 |---|---|
-| `scene.json` | **最权威的结构化数据**：房间、墙、门窗、固定设施、备注，单位米 |
+| `scene.json` | **最权威的结构化数据**：房间、墙、门窗、柱子、备注，单位米 |
 | `build_whitebox.py` | Blender 脚本，读 `scene.json` 按真实尺寸重建白模（推荐用这个） |
 | `whitebox.obj` / `.mtl` | 同一个白模的 OBJ 版本，可以直接导入 Blender |
 | `whitebox.usda` | 同一个白模的 USD 版本（Z 轴朝上、单位米，Blender 可直接导入） |
-| `roomplan_original.usdz` | Apple RoomPlan 的原始参数化模型，带家具，仅供参考 |
+| `whitebox.glb` | 同一个白模的 glTF 版本（网页查看器和 AI 3D 工具常用） |
+| `ai_images/` | AI 生图素材：每个视角一组 `*_photo.jpg`（现场照片）、`*_whitebox.png`（同一位置和角度的空房间白模图）、`*_depth.png`（深度图，近白远黑）。可以把白模图或深度图作为结构参考交给生图工具 |
+| `roomplan_original.usdz` | Apple RoomPlan 的原始模型（带它识别的家具，可能不准），仅供参考 |
 | `floorplan.png` / `.pdf` | 俯视尺寸平面图，单位 mm |
 | `photos/` | 现场照片。`AUTO_` 开头的是扫描时自动拍的，其余是手动拍的；位置和朝向见 `scene.json` 的 `sitePhotos` |
 
@@ -32,7 +34,10 @@
     窗：`casementWindow` 平开窗、`slidingWindow` 推拉窗、`fixedWindow` 固定窗、`awningWindow` 上悬窗。没有这个字段表示用户还没确认
   - `hinge`：门轴 / 合页在哪边（`left` / `right`），按「站在房间里、面朝这面墙」来看，也就是从 `outward` 的反方向看过去
   - `opensOutward`：平开门是否往房间外开，`false` 或没有表示往里开
-- `fixtures[]`：马桶、洗手盆、灶台等固定设施的位置。它们决定**下水、排烟、电位**，做设计时不要随意移动
+- `columns[]`：柱子。`kind` 为 `pilaster`（贴墙柱）或 `freestanding`（独立柱），`center` / `width` / `depth` / `yaw` / `height` 是柱子的位置和尺寸。
+  `wallIds` 不为空时，柱子已经由这几面墙表示（墙体里已经有这块凸出）；为空时是用户手动标的，需要单独建一个方柱。
+  做设计时柱子不能拆除
+- 这个白模**只有墙、门窗和柱子**，现场的家具和设施都已去掉。现场原样请看 `photos/`
 - `annotations[]`：用户备注（note）和测距（measurement），`photos` 是照片路径
 - `sitePhotos[]`：现场照片（扫描时自动拍的，`isAuto: true`，以及手动拍的）。每张都有拍摄相机的 `cameraPosition`、
   `cameraDirection`、`cameraUp`、`verticalFov`（竖拍画面的垂直视角，度），以及拍到的房间 `roomId` 和墙 `wallId`。
@@ -57,10 +62,11 @@
    或者直接导入 `whitebox.obj`
 2. 先读一遍上面的备注和 `photos/`，弄清楚用户的需求和现场情况
 3. 在白模里做室内设计（墙面、地面、吊顶、柜体、家具），**不要改动墙体位置和门窗洞口**
-4. 卫生间、厨房的设计要围绕 `fixtures` 里的位置来做
+4. 柱子和梁不能拆除；卫生间、厨房的下水和排烟位置请对照现场照片
 
 ## 已知误差
 
 - LiDAR 扫描的墙长误差一般在几厘米以内；玻璃、镜子和杂物多的地方误差会大一些
 - 墙厚是默认值（120 mm），不是测量值
+- 墙体经过自动整理：按主方向拉直，相邻墙角对齐；柱子是根据墙的形状自动识别的，可能有漏掉或误判
 - `isCurved: true` 的墙是弧形墙，这里近似成了直线
