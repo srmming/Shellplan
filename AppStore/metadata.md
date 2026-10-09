@@ -8,13 +8,13 @@
 |---|---|
 | 套装 ID | com.mingzeng.roomscan |
 | SKU | roomscan |
-| 主要类别 | 效率（Productivity） |
-| 次要类别 | 工具（Utilities） |
+| 主要类别 | 图形和设计（Graphics & Design） |
+| 次要类别 | 效率（Productivity） |
 | 价格 | 免费 |
 | 版权 | 2026 ming zeng |
-| 技术支持网址 | https://srmming.github.io/Roomprint/support.html |
-| 营销网址 | https://srmming.github.io/Roomprint/ |
-| 隐私政策网址 | https://srmming.github.io/Roomprint/privacy.html |
+| 技术支持网址 | https://srmming.github.io/Shellplan/support.html |
+| 营销网址 | https://srmming.github.io/Shellplan/ |
+| 隐私政策网址 | https://srmming.github.io/Shellplan/privacy.html |
 
 ## 简体中文（主要语言）
 
@@ -68,7 +68,7 @@ AI 装修底图用 iPhone 的 LiDAR 帮你量房：一间一间扫描，自动�
 所有数据只保存在你的手机上。App 不联网、不收集任何数据。
 
 【开源】
-AI 装修底图是开源软件（MIT 许可证），源代码在 GitHub：github.com/srmming/Roomprint
+AI 装修底图是开源软件（MIT 许可证），源代码在 GitHub：github.com/srmming/Shellplan
 
 设备要求：带 LiDAR 的 iPhone（iPhone 12 Pro 及之后的 Pro / Pro Max 机型）。没有 LiDAR 的设备可以加载示例户型查看效果。
 
@@ -86,12 +86,12 @@ LiDAR,量房,户型图,平面图,测量,装修,3D扫描,白模,建模,Blender,Ro
 
 **Name**（30）
 ```
-Roomprint: Scan for AI Design
+Shellplan: Scan for AI Design
 ```
 
 **Subtitle**（30）
 ```
-LiDAR room scan for AI design
+LiDAR floor plans & 3D models
 ```
 
 **Promotional Text**（170）
@@ -101,7 +101,7 @@ Scan your home room by room with iPhone LiDAR. Get an empty whitebox 3D model, a
 
 **Description**
 ```
-Roomprint turns your LiDAR iPhone into a whole-home measuring tool, built for AI-assisted interior design.
+Shellplan turns your LiDAR iPhone into a whole-home measuring tool, built for AI-assisted interior design.
 
 SCAN ROOM BY ROOM
 Built on Apple RoomPlan. Walk slowly around each room, name it, move on to the next — rooms are merged into one floor plan automatically.
@@ -125,7 +125,7 @@ PRIVACY
 Everything stays on your device. The app has no network features and collects no data.
 
 OPEN SOURCE
-MIT licensed: github.com/srmming/Roomprint
+MIT licensed: github.com/srmming/Shellplan
 
 Requires an iPhone with LiDAR (iPhone 12 Pro or later Pro models). Available in English, Spanish, Japanese, Simplified and Traditional Chinese.
 ```
@@ -141,12 +141,12 @@ LiDAR,floor plan,room scan,measure,whitebox,Blender,RoomPlan,interior design,3D 
 
 **Nombre**（30）
 ```
-Roomprint: escaneo para IA
+Shellplan: escaneo para IA
 ```
 
 **Subtítulo**（30）
 ```
-Escaneo LiDAR para diseño IA
+Planos LiDAR y modelo 3D
 ```
 
 **Texto promocional**（170）
@@ -156,7 +156,7 @@ Escanea tu casa habitación por habitación con el LiDAR del iPhone. Obtén un m
 
 **Descripción**
 ```
-Roomprint convierte tu iPhone con LiDAR en una herramienta para medir toda tu vivienda, pensada para el diseño de interiores con IA.
+Shellplan convierte tu iPhone con LiDAR en una herramienta para medir toda tu vivienda, pensada para el diseño de interiores con IA.
 
 ESCANEA HABITACIÓN POR HABITACIÓN
 Basado en Apple RoomPlan. Recorre cada habitación despacio, ponle nombre y pasa a la siguiente: se unen en un solo plano automáticamente.
@@ -180,7 +180,7 @@ PRIVACIDAD
 Todo se queda en tu dispositivo. La app no usa la red ni recopila datos.
 
 CÓDIGO ABIERTO
-Licencia MIT: github.com/srmming/Roomprint
+Licencia MIT: github.com/srmming/Shellplan
 
 Requiere un iPhone con LiDAR (iPhone 12 Pro o modelos Pro posteriores).
 ```
@@ -194,7 +194,7 @@ LiDAR,plano,medir,escáner 3D,habitación,reforma,diseño interior,Blender,RoomP
 
 **名前**（30）
 ```
-Roomprint：AI設計用の間取り
+Shellplan：AI設計用の間取り
 ```
 
 **サブタイトル**（30）
@@ -209,7 +209,7 @@ iPhone の LiDAR で部屋ごとにスキャンして家全体の間取りに。
 
 **説明**
 ```
-Roomprint は、LiDAR 搭載 iPhone を家全体の採寸ツールに変えるアプリです。AI を使ったインテリアデザインのために作られています。
+Shellplan は、LiDAR 搭載 iPhone を家全体の採寸ツールに変えるアプリです。AI を使ったインテリアデザインのために作られています。
 
 部屋ごとにスキャン
 Apple RoomPlan を利用。部屋をゆっくり一周して名前を付け、次の部屋へ。最後に家全体の間取りへ自動でつながります。
@@ -233,7 +233,7 @@ OBJ/USD モデル、PNG/PDF の寸法入り平面図（mm）、構造化デー�
 データはすべて端末内に保存されます。通信機能はなく、データを収集しません。
 
 オープンソース
-MIT ライセンス：github.com/srmming/Roomprint
+MIT ライセンス：github.com/srmming/Shellplan
 
 LiDAR 搭載の iPhone（iPhone 12 Pro 以降の Pro モデル）が必要です。
 ```
@@ -286,7 +286,7 @@ AI 裝修底圖用 iPhone 的 LiDAR 幫你量房：一間一間掃描，自動�
 所有資料只儲存在你的手機上。App 不連網、不收集任何資料。
 
 【開源】
-AI 裝修底圖是開源軟體（MIT 授權），原始碼在 GitHub：github.com/srmming/Roomprint
+AI 裝修底圖是開源軟體（MIT 授權），原始碼在 GitHub：github.com/srmming/Shellplan
 
 裝置需求：配備 LiDAR 的 iPhone（iPhone 12 Pro 及之後的 Pro / Pro Max 機型）。
 ```
@@ -323,13 +323,13 @@ LiDAR,量房,格局圖,平面圖,測量,裝修,3D掃描,白模,建模,Blender,Ro
 
 **备注**（审核员会看到）
 ```
-Roomprint scans rooms with Apple RoomPlan and requires an iPhone with LiDAR (iPhone 12 Pro or later Pro models).
+Shellplan scans rooms with Apple RoomPlan and requires an iPhone with LiDAR (iPhone 12 Pro or later Pro models).
 
 If your test device does not have LiDAR, open the menu (… at the top right of the home screen) and choose “加载示例户型” (Load sample floor plan). This opens a sample apartment where you can test every feature except scanning: the 3D whitebox model with dimensions, measuring (测距), notes with photos (备注), the floor plan view (平面图), and export (top-right menu → 导出给 AI → 打包分享).
 
 The app has no accounts, no network features, and collects no data. Camera access is used for LiDAR scanning and taking photos; photo library access is used only when attaching photos to notes.
 
-Source code: https://github.com/srmming/Roomprint
+Source code: https://github.com/srmming/Shellplan
 ```
 
 ## 截图
